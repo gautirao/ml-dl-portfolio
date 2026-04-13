@@ -1,0 +1,6 @@
+pandas
+numpy
+matplotlib
+shap
+scikit-learn
+ipykernel

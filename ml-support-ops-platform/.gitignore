@@ -1,0 +1,20 @@
+# OS files
+.DS_Store
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints
+
+# Project artifacts
+data/processed/*.csv
+models/*.joblib
+reports/*.txt
+reports/*.png
+.idea/
