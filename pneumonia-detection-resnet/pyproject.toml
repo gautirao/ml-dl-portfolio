@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rsna_pneumonia"
+version = "0.1.0"
+description = "RSNA Pneumonia Detection using ResNet-18"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "pydicom",
+    "Pillow",
+    "matplotlib",
+    "tqdm",
+    "torch",
+    "torchvision",
+    "ipykernel"
+]
+
+[project.scripts]
+rsna-pneumonia = "rsna_pneumonia.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["rsna_pneumonia*"]
