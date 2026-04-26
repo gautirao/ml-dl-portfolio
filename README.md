@@ -21,6 +21,12 @@ A more structured and comprehensive MLOps-style project with clear separation of
 - **Key Concepts:** Data ingestion, feature preprocessing, model training, evaluation, and reporting.
 - **Structure:** `src/` for core logic, `data/` for raw/processed data, `models/` for saved model binaries, and `reports/` for visualization outputs.
 
+### 4. [Pneumonia Detection (Modular AI Project)](./pneumonia-detection-resnet/)
+**The "Robot Doctor"**
+A production-ready deep learning package for classifying chest X-rays to detect pneumonia using **ResNet-18**.
+- **Key Concepts:** Computer Vision, Transfer Learning, DICOM image processing, modular CLI (Train/Evaluate/Predict), and detailed performance metrics (Precision, Recall, F1).
+- **Use Case:** Identifying "lung opacities" in medical radiographs from the RSNA Pneumonia Detection Challenge.
+
 ---
 
 ## 🚀 How to Get Started
