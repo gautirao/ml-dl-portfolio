@@ -16,3 +16,4 @@ def get_resnet18_model(num_classes=2, pretrained=True):
     model.fc = nn.Linear(num_ftrs, num_classes)
     return model
 
+#
