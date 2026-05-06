@@ -1,0 +1,53 @@
+import os
+import duckdb
+from pathlib import Path
+from pydantic_settings import BaseSettings
+import uuid
+import json
+
+class Settings(BaseSettings):
+    db_path: str = "data/ledgermind.db"
+    schema_path: str = "src/database/schema.sql"
+
+    class Config:
+        env_prefix = "LM_"
+
+settings = Settings()
+
+class DatabaseManager:
+    def __init__(self, db_path: str = None):
+        self.db_path = db_path or settings.db_path
+        # Ensure data directory exists
+        Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
+        self.conn = None
+
+    def get_connection(self):
+        if self.conn is None:
+            self.conn = duckdb.connect(self.db_path)
+        return self.conn
+
+    def initialize_db(self):
+        """Initializes the database with the schema and logs the event."""
+        conn = self.get_connection()
+        
+        # Read and execute schema
+        schema_file = Path(__file__).parent / "schema.sql"
+        with open(schema_file, "r") as f:
+            schema_sql = f.read()
+        
+        conn.execute(schema_sql)
+        
+        # Log DB initialization to audit_events
+        audit_id = str(uuid.uuid4())
+        event_type = "DB_INIT"
+        description = "Database initialized with schema"
+        metadata = json.dumps({"db_path": self.db_path})
+        
+        conn.execute(
+            "INSERT INTO audit_events (id, event_type, description, metadata) VALUES (?, ?, ?, ?)",
+            (audit_id, event_type, description, metadata)
+        )
+        print(f"Database initialized at {self.db_path}")
+
+# Global instance for dependency injection
+db_manager = DatabaseManager()

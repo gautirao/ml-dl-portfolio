@@ -1,0 +1,4 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+syn_tx_1,01/02/2026,10:00:00,Card payment,Fake Merchant,🛒,Groceries,-10.50,GBP,-10.50,GBP,,123 Fake St,,FAKE MERCHANT GBR,,-10.50,
+syn_tx_2,02/02/2026,11:00:00,Card payment,Fake Store,🍔,Eating out,-5.00,GBP,-5.00,GBP,,456 Fake Rd,,FAKE STORE GBR,,-5.00,
+syn_tx_3,03/02/2026,12:00:00,Faster payment,FAKE PAYEE,,Transfers,100.00,GBP,100.00,GBP,Fake Note,,,Fake Payee,,,100.00

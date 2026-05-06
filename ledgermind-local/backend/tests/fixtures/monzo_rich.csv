@@ -1,0 +1,3 @@
+Transaction ID,Date,Time,Type,Name,Emoji,Category,Amount,Currency,Local amount,Local currency,Notes and #tags,Address,Receipt,Description,Category split,Money Out,Money In
+tx_123,01/01/2023,12:00:00,Payment,Tesco,🛒,Groceries,-12.50,GBP,-12.50,GBP,Weekly shop,London,,Tesco London,,12.50,
+tx_456,02/01/2023,10:00:00,Topup,Salary,💰,Income,2000.00,GBP,2000.00,GBP,Monthly pay,,,Salary payment,,,2000.00
