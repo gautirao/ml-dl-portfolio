@@ -49,5 +49,16 @@ class DatabaseManager:
         )
         print(f"Database initialized at {self.db_path}")
 
+    def log_event(self, event_type: str, description: str, metadata: dict = None):
+        """Logs an event to the audit_events table."""
+        conn = self.get_connection()
+        audit_id = str(uuid.uuid4())
+        metadata_json = json.dumps(metadata) if metadata else None
+        
+        conn.execute(
+            "INSERT INTO audit_events (id, event_type, description, metadata) VALUES (?, ?, ?, ?)",
+            (audit_id, event_type, description, metadata_json)
+        )
+
 # Global instance for dependency injection
 db_manager = DatabaseManager()

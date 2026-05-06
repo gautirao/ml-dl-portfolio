@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Depends
 from src.database.connection import db_manager
 from src.api.imports import router as import_router
+from src.api.analytics import router as analytics_router
 import duckdb
 
 app = FastAPI(title="LedgerMind Local API")
 
 app.include_router(import_router)
+app.include_router(analytics_router)
 
 @app.on_event("startup")
 async def startup_event():
