@@ -73,7 +73,7 @@ def search_transactions(
     count_params = list(params)
     
     # Sorting and Pagination
-    query += " ORDER BY transaction_date DESC, created_at DESC LIMIT ? OFFSET ?"
+    query += " ORDER BY transaction_date DESC, id DESC LIMIT ? OFFSET ?"
     params.extend([limit, offset])
     
     # Execute

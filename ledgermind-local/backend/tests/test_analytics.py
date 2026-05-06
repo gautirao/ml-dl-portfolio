@@ -219,3 +219,23 @@ def test_pagination_and_limit_bounds():
     assert data["limit"] == 5
     assert data["offset"] == 2
     assert data["total_count"] == 10
+
+def test_recurring_payment_zero_amount():
+    # Scenario: Recurring zero-amount transactions (e.g. inactive subscriptions)
+    base_date = date(2024, 1, 1)
+    txs = []
+    for i in range(4):
+        txs.append({
+            "date": base_date + timedelta(days=i*30),
+            "amount": 0.0,
+            "direction": "outflow",
+            "merchant": "ZeroCorp",
+            "description": "Zero Amount DD"
+        })
+    seed_transactions(txs)
+    
+    result = detect_recurring_payments(min_occurrences=3)
+    assert len(result.candidates) == 1
+    assert result.candidates[0].merchant == "ZeroCorp"
+    assert result.candidates[0].average_amount == 0.0
+    assert result.candidates[0].cadence == "monthly"

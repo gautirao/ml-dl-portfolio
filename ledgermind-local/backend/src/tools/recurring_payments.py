@@ -58,8 +58,11 @@ def detect_recurring_payments(
         amount_stability = 1.0 - (std_amount / avg_amount if avg_amount > 0 else 0)
         
         # Check if amounts are within tolerance
-        out_of_tolerance = any(abs(a - avg_amount) / avg_amount > (amount_tolerance_percent / 100) for a in amounts)
-        if out_of_tolerance and len(amounts) < 5: # Be more lenient if we have more data
+        out_of_tolerance = False
+        if avg_amount > 0:
+            out_of_tolerance = any(abs(a - avg_amount) / avg_amount > (amount_tolerance_percent / 100) for a in amounts)
+        
+        if out_of_tolerance and len(amounts) < 5: 
              # Check if at least min_occurrences are within tolerance?
              # For now, let's just use confidence.
              pass
