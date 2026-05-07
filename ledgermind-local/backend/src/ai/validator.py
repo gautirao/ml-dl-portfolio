@@ -10,7 +10,7 @@ def validate_plan(plan: PlannerPlan) -> Tuple[bool, str]:
     """
     # 1. Reject unknown tools
     allowed_tools = [
-        "spending_summary", "top_merchants", "compare_periods",
+        "spending_summary", "semantic_spending_search", "top_merchants", "compare_periods",
         "recurring_payments", "transaction_search", "category_summary",
         "clarification", "out_of_scope"
     ]
@@ -34,7 +34,7 @@ def validate_plan(plan: PlannerPlan) -> Tuple[bool, str]:
     # 3. Tool-specific validation
     args = plan.arguments
     
-    if plan.tool in ["spending_summary", "top_merchants", "category_summary"]:
+    if plan.tool in ["spending_summary", "semantic_spending_search", "top_merchants", "category_summary"]:
         if "date_from" in args and "date_to" in args:
             try:
                 df = date.fromisoformat(args["date_from"])

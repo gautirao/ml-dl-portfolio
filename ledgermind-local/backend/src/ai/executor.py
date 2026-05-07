@@ -53,8 +53,9 @@ async def execute_plan(plan: PlannerPlan) -> ToolResult:
                 source_bank=args.get("source_bank")
             )
         elif tool_name == "semantic_spending_search":
+            query = args.get("query") or plan.intent
             result = await calculate_semantic_spending(
-                query=args.get("query"),
+                query=query,
                 date_from=to_date(args.get("date_from")),
                 date_to=to_date(args.get("date_to"))
             )

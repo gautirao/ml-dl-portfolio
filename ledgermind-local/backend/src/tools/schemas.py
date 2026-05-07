@@ -35,8 +35,8 @@ class SpendingSummaryResult(AnalyticsResult):
     total_inflow: float
     net_amount: float
     transaction_count: int
-    date_from: date
-    date_to: date
+    date_from: Optional[date] = None
+    date_to: Optional[date] = None
     filters_applied: Dict[str, Any]
 
 class MerchantSummary(BaseModel):

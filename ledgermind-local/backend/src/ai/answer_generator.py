@@ -52,6 +52,9 @@ class AnswerGenerator:
             
         if tool == "spending_summary":
             summary += f"Total inflow: {res.get('total_inflow')}, Total outflow: {res.get('total_outflow')}, Net: {res.get('net_amount')}."
+        elif tool == "semantic_spending_search":
+            det_res = res.get("deterministic_result", {})
+            summary += f"Total inflow: {det_res.get('total_inflow')}, Total outflow: {det_res.get('total_outflow')}, Net: {det_res.get('net_amount')}."
         elif tool == "top_merchants":
             merchants = [f"{m['merchant']} ({m['total_amount']})" for m in res.get("merchants", [])[:3]]
             summary += f"Top merchants: {', '.join(merchants)}."

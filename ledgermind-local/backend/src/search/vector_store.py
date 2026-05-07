@@ -35,7 +35,13 @@ class VectorStore:
         limit: int = 10,
         where: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
+        if not query_text:
+            return []
+            
         query_embedding = await embedding_client.embed_query(query_text)
+        if not query_embedding:
+            return []
+            
         results = self.collection.query(
             query_embeddings=[query_embedding],
             n_results=limit,
@@ -44,13 +50,13 @@ class VectorStore:
         
         # Format results
         formatted = []
-        if results['ids']:
+        if results and results.get('ids') and len(results['ids']) > 0:
             for i in range(len(results['ids'][0])):
                 formatted.append({
                     "id": results['ids'][0][i],
                     "text": results['documents'][0][i],
                     "metadata": results['metadatas'][0][i],
-                    "score": results['distances'][0][i] if 'distances' in results else None
+                    "score": results['distances'][0][i] if 'distances' in results and results['distances'] else None
                 })
         return formatted
 
