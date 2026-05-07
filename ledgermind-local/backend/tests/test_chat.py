@@ -127,7 +127,7 @@ async def test_chat_verification_failure_fallback(mock_planner, mock_answer_gen)
         assert data["guardrails"]["output_verified"] is False
 
 @pytest.mark.anyio
-async def test_chat_clarification(mock_planner):
+async def test_chat_clarification(mock_planner, mock_answer_gen):
     mock_planner.create_plan.return_value = PlannerPlan(
         intent="vague",
         tool="clarification",
@@ -138,6 +138,9 @@ async def test_chat_clarification(mock_planner):
         risk_level="low",
         reasoning_summary="Missing dates"
     )
+    
+    # Mock the answer gen to return something containing the question or indicating clarification
+    mock_answer_gen.generate_answer.return_value = "I need to know: Which month?"
     
     response = client.post("/api/chat", json={"message": "Show me spending"})
     assert response.status_code == 200
