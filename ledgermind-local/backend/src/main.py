@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from src.database.connection import db_manager
 from src.api.imports import router as import_router
 from src.api.analytics import router as analytics_router
@@ -6,6 +7,15 @@ from src.api.chat import router as chat_router
 import duckdb
 
 app = FastAPI(title="LedgerMind Local API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(import_router)
 app.include_router(analytics_router)

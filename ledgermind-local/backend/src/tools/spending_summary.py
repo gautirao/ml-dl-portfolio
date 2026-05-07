@@ -5,8 +5,8 @@ from src.tools.schemas import SpendingSummaryResult, Evidence
 import time
 
 def get_spending_summary(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     category: Optional[str] = None,
     merchant: Optional[str] = None,
     source_bank: Optional[str] = None
@@ -21,9 +21,16 @@ def get_spending_summary(
             SUM(amount) as net_amount,
             COUNT(*) as transaction_count
         FROM transactions 
-        WHERE transaction_date >= ? AND transaction_date <= ?
+        WHERE 1=1
     """
-    params = [date_from, date_to]
+    params = []
+    
+    if date_from:
+        query += " AND transaction_date >= ?"
+        params.append(date_from)
+    if date_to:
+        query += " AND transaction_date <= ?"
+        params.append(date_to)
     
     filters = {
         "date_from": date_from,

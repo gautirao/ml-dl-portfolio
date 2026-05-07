@@ -12,7 +12,8 @@ def detect_recurring_payments(
     date_to: Optional[date] = None,
     min_occurrences: int = 3,
     amount_tolerance_percent: float = 10.0,
-    direction: str = "outflow"
+    direction: str = "outflow",
+    source_bank: Optional[str] = None
 ) -> RecurringPaymentsResult:
     start_time = time.time()
     conn = db_manager.get_connection()
@@ -27,6 +28,10 @@ def detect_recurring_payments(
     """
     params = [direction]
     
+    if source_bank:
+        query += " AND source_bank = ?"
+        params.append(source_bank)
+        
     if date_from:
         query += " AND transaction_date >= ?"
         params.append(date_from)

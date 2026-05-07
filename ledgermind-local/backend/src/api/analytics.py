@@ -50,13 +50,13 @@ async def get_transactions(
 
 @router.get("/analytics/spending-summary", response_model=SpendingSummaryResult)
 async def spending_summary(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     category: Optional[str] = None,
     merchant: Optional[str] = None,
     source_bank: Optional[str] = None
 ):
-    if date_from > date_to:
+    if date_from and date_to and date_from > date_to:
         raise HTTPException(status_code=400, detail="date_from must be before or equal to date_to")
         
     try:
@@ -73,14 +73,14 @@ async def spending_summary(
 
 @router.get("/analytics/top-merchants", response_model=TopMerchantsResult)
 async def top_merchants(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     direction: str = Query("outflow", pattern="^(inflow|outflow)$"),
     limit: int = Query(10, ge=1, le=50),
     category: Optional[str] = None,
     source_bank: Optional[str] = None
 ):
-    if date_from > date_to:
+    if date_from and date_to and date_from > date_to:
         raise HTTPException(status_code=400, detail="date_from must be before or equal to date_to")
         
     try:
@@ -125,11 +125,11 @@ async def compare_periods_endpoint(
 
 @router.get("/analytics/category-summary", response_model=CategorySummaryResult)
 async def category_summary(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     source_bank: Optional[str] = None
 ):
-    if date_from > date_to:
+    if date_from and date_to and date_from > date_to:
         raise HTTPException(status_code=400, detail="date_from must be before or equal to date_to")
         
     try:
@@ -146,6 +146,7 @@ async def category_summary(
 async def recurring_payments(
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
+    source_bank: Optional[str] = None,
     min_occurrences: int = Query(3, ge=2),
     amount_tolerance_percent: float = Query(10.0, ge=0, le=100),
     direction: str = Query("outflow", pattern="^(inflow|outflow)$")
@@ -159,7 +160,8 @@ async def recurring_payments(
             date_to=date_to,
             min_occurrences=min_occurrences,
             amount_tolerance_percent=amount_tolerance_percent,
-            direction=direction
+            direction=direction,
+            source_bank=source_bank
         )
     except Exception as e:
         db_manager.log_event("analytics_query_failed", f"Recurring payments failed: {str(e)}")

@@ -5,8 +5,8 @@ from src.tools.schemas import CategorySummaryResult, CategoryItem, Evidence
 import time
 
 def get_category_summary(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     source_bank: Optional[str] = None
 ) -> CategorySummaryResult:
     start_time = time.time()
@@ -20,9 +20,16 @@ def get_category_summary(
             SUM(amount) as net_amount,
             COUNT(*) as transaction_count
         FROM transactions 
-        WHERE transaction_date >= ? AND transaction_date <= ?
+        WHERE 1=1
     """
-    params = [date_from, date_to]
+    params = []
+    
+    if date_from:
+        query += " AND transaction_date >= ?"
+        params.append(date_from)
+    if date_to:
+        query += " AND transaction_date <= ?"
+        params.append(date_to)
     
     if source_bank:
         query += " AND source_bank = ?"

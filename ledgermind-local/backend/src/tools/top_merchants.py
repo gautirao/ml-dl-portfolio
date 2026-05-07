@@ -5,8 +5,8 @@ from src.tools.schemas import TopMerchantsResult, MerchantSummary, Evidence
 import time
 
 def get_top_merchants(
-    date_from: date,
-    date_to: date,
+    date_from: Optional[date] = None,
+    date_to: Optional[date] = None,
     direction: str = "outflow",
     limit: int = 10,
     category: Optional[str] = None,
@@ -28,12 +28,20 @@ def get_top_merchants(
             MIN(transaction_date) as first_date,
             MAX(transaction_date) as last_date
         FROM transactions 
-        WHERE transaction_date >= ? AND transaction_date <= ?
-          AND direction = ?
-          AND COALESCE(merchant, description) IS NOT NULL
-          AND COALESCE(merchant, description) != ''
+        WHERE 1=1
     """
-    params = [date_from, date_to, direction]
+    params = []
+    
+    if date_from:
+        query += " AND transaction_date >= ?"
+        params.append(date_from)
+    if date_to:
+        query += " AND transaction_date <= ?"
+        params.append(date_to)
+        
+    query += " AND direction = ?"
+    params.append(direction)
+    query += " AND COALESCE(merchant, description) IS NOT NULL AND COALESCE(merchant, description) != ''"
     
     if category:
         query += " AND category = ?"
