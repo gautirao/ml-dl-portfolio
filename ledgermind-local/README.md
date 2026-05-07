@@ -41,6 +41,10 @@ LedgerMind solves this by:
     -   Recurring payment detection (heuristic cadence analysis).
     -   Category-based aggregations.
 -   **Conversational Interface:** Ask questions like "How much did I spend at Amazon last month?" or "What are my recurring subscriptions?"
+-   **Human-in-the-Loop Category Approval:**
+    -   AI suggests categories and merchant normalization based on semantic matching.
+    -   Users approve, reject, or edit suggestions before they become deterministic rules.
+    -   Approved rules are automatically applied to future imports, ensuring long-term data consistency.
 -   **Execution Trace:** A collapsible "Planner & Evidence" panel in the UI that proves how the AI reached its answer.
 -   **Privacy-First:** No cloud sync, no tracking, no data leaves your device.
 

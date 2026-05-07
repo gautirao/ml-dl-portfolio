@@ -55,3 +55,19 @@ CREATE TABLE IF NOT EXISTS audit_events (
 CREATE INDEX IF NOT EXISTS idx_trans_date ON transactions(transaction_date);
 CREATE INDEX IF NOT EXISTS idx_trans_merchant ON transactions(merchant);
 CREATE INDEX IF NOT EXISTS idx_trans_category ON transactions(category);
+
+-- 5. Category Suggestions for Human-in-the-loop review
+CREATE TABLE IF NOT EXISTS category_suggestions (
+    id UUID PRIMARY KEY,
+    transaction_id UUID,             -- Optional: can suggest for a specific transaction
+    merchant_text VARCHAR,           -- The raw merchant/description text
+    suggested_merchant VARCHAR,
+    suggested_category VARCHAR,
+    suggested_subcategory VARCHAR,
+    confidence DECIMAL(5, 4),        -- 0.0 to 1.0
+    evidence_json JSON,              -- Details on why this was suggested
+    status VARCHAR DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'edited'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    reviewed_at TIMESTAMP,
+    FOREIGN KEY (transaction_id) REFERENCES transactions(id)
+);

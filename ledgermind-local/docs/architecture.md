@@ -96,7 +96,13 @@ Introduced in Milestone 7 to handle broad or conceptual queries.
 -   **Hybrid Matcher:** When a user asks a broad question (e.g., "Show my coffee spending"), the system uses vector search to find relevant candidate merchants (Starbucks, Costa) and categories (Coffee).
 -   **Execution:** The candidate list is then passed to the deterministic `spending_summary` tool for final calculation. This ensures semantic flexibility without sacrificing numerical accuracy.
 
-### 4. AI Orchestrator (Planner-Executor)
+### 4. Human-in-the-Loop Category Layer
+Bridging the gap between AI suggestions and deterministic rules.
+-   **Suggestion Service:** Scans uncategorized transactions and uses the Semantic Matcher to propose merchants and categories.
+-   **Rule Engine:** Stores user-approved mappings in a `merchant_rules` table. These rules are prioritized over semantic suggestions and applied automatically during ingestion.
+-   **Review Workflow:** A dedicated UI section where users "train" the system by approving or correcting AI suggestions, creating a virtuous cycle of data quality.
+
+### 5. AI Orchestrator (Planner-Executor)
 This is the "brain" of the application.
 -   **Planner:** Interprets the user's natural language and selects the appropriate tool and arguments.
 -   **Executor:** Runs the tool and captures "evidence" (raw data, query parameters, row counts).

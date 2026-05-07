@@ -8,6 +8,7 @@ import type {
   TopMerchant,
   CategorySummaryItem,
   RecurringPayment,
+  CategorySuggestion,
 } from "./types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
@@ -125,6 +126,41 @@ export const api = {
       "/api/analytics/recurring-payments",
       { params }
     );
+    return response.data;
+  },
+
+  // Category Suggestions
+  getCategorySuggestions: async (params?: {
+    status?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<CategorySuggestion[]> => {
+    const response = await client.get<CategorySuggestion[]>("/api/categories/suggestions", { params });
+    return response.data;
+  },
+
+  generateCategorySuggestions: async (limit: number = 50): Promise<CategorySuggestion[]> => {
+    const response = await client.post<CategorySuggestion[]>("/api/categories/suggestions/generate", null, { params: { limit } });
+    return response.data;
+  },
+
+  approveCategorySuggestion: async (id: string, applyToMatching: boolean = false): Promise<any> => {
+    const response = await client.post(`/api/categories/suggestions/${id}/approve`, { apply_to_matching: applyToMatching });
+    return response.data;
+  },
+
+  rejectCategorySuggestion: async (id: string): Promise<any> => {
+    const response = await client.post(`/api/categories/suggestions/${id}/reject`);
+    return response.data;
+  },
+
+  editCategorySuggestion: async (id: string, data: {
+    suggested_merchant: string;
+    suggested_category: string;
+    suggested_subcategory?: string | null;
+    apply_to_matching: boolean;
+  }): Promise<any> => {
+    const response = await client.post(`/api/categories/suggestions/${id}/edit`, data);
     return response.data;
   },
 };

@@ -22,6 +22,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: "Upload", href: "/", icon: Upload },
     { name: "Transactions", href: "/transactions", icon: Table },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
+    { name: "Review", href: "/review", icon: ShieldCheck },
     { name: "Chat", href: "/chat", icon: MessageSquare },
   ];
 

@@ -140,6 +140,10 @@ class IngestionService:
             )
             imported_count += 1
 
+        # 4. Apply deterministic rules
+        from ..categories.rules import RuleService
+        RuleService.apply_rules()
+
         # Audit
         conn.execute(
             "INSERT INTO audit_events (id, event_type, description, metadata) VALUES (?, ?, ?, ?)",

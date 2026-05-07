@@ -108,6 +108,20 @@ export interface RecurringPayment {
   last_date: string;
 }
 
+export interface CategorySuggestion {
+  id: string;
+  transaction_id: string | null;
+  merchant_text: string;
+  suggested_merchant: string | null;
+  suggested_category: string | null;
+  suggested_subcategory: string | null;
+  confidence: number;
+  evidence_json: any;
+  status: "pending" | "approved" | "rejected" | "edited";
+  created_at: string;
+  reviewed_at: string | null;
+}
+
 export interface Analytics {
   spending_summary: SpendingSummary;
   top_merchants: TopMerchant[];
