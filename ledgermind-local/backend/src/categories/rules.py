@@ -16,15 +16,17 @@ class RuleService:
             # But for Milestone 8, we'll stick to exact-ish match (ILIKE)
             search_pattern = pattern if '%' in pattern else f"%{pattern}%"
             
-            res = conn.execute(
+            conn.execute(
                 """UPDATE transactions 
                    SET merchant = ?, category = ?, subcategory = ? 
                    WHERE (description ILIKE ? OR merchant ILIKE ?) 
-                   AND (category IS NULL OR category = '' OR category = 'Uncategorized')
-                   RETURNING id""",
+                   AND (category IS NULL OR category = '' OR category = 'Uncategorized')""",
                 (merchant_name, category, subcategory, search_pattern, search_pattern)
-            ).fetchall()
-            total_updated += len(res)
+            )
+            # Count updates roughly
+            updated = conn.execute("SELECT count(*) FROM transactions WHERE merchant = ? AND category = ? AND (description ILIKE ? OR merchant ILIKE ?)", 
+                                   (merchant_name, category, search_pattern, search_pattern)).fetchone()[0]
+            total_updated += updated
         
         if total_updated > 0:
             db_manager.log_event("rules_applied", f"Applied rules to {total_updated} transactions", {"rules_count": len(rules)})

@@ -68,6 +68,5 @@ CREATE TABLE IF NOT EXISTS category_suggestions (
     evidence_json JSON,              -- Details on why this was suggested
     status VARCHAR DEFAULT 'pending', -- 'pending', 'approved', 'rejected', 'edited'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    reviewed_at TIMESTAMP,
-    FOREIGN KEY (transaction_id) REFERENCES transactions(id)
+    reviewed_at TIMESTAMP
 );

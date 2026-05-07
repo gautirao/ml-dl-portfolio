@@ -150,11 +150,13 @@ class SuggestionService:
         # 3. Apply to matching transactions if requested
         updated_count = 0
         if apply_to_matching:
-            res = conn.execute(
-                "UPDATE transactions SET merchant = ?, category = ?, subcategory = ? WHERE (description ILIKE ? OR merchant ILIKE ?) AND (category IS NULL OR category = '' OR category = 'Uncategorized') RETURNING id",
+            conn.execute(
+                "UPDATE transactions SET merchant = ?, category = ?, subcategory = ? WHERE (description ILIKE ? OR merchant ILIKE ?) AND (category IS NULL OR category = '' OR category = 'Uncategorized')",
                 (s['suggested_merchant'], s['suggested_category'], s['suggested_subcategory'], pattern, pattern)
-            ).fetchall()
-            updated_count = len(res)
+            )
+            # Rough estimate of updated count for auditing
+            updated_count = conn.execute("SELECT count(*) FROM transactions WHERE merchant = ? AND category = ? AND (description ILIKE ? OR merchant ILIKE ?)", 
+                                         (s['suggested_merchant'], s['suggested_category'], pattern, pattern)).fetchone()[0]
 
         # 4. Trigger index rebuild/update if indexer exists
         if self.indexer:
@@ -221,11 +223,13 @@ class SuggestionService:
             
         updated_count = 0
         if apply_to_matching:
-            res = conn.execute(
-                "UPDATE transactions SET merchant = ?, category = ?, subcategory = ? WHERE (description ILIKE ? OR merchant ILIKE ?) AND (category IS NULL OR category = '' OR category = 'Uncategorized') RETURNING id",
+            conn.execute(
+                "UPDATE transactions SET merchant = ?, category = ?, subcategory = ? WHERE (description ILIKE ? OR merchant ILIKE ?) AND (category IS NULL OR category = '' OR category = 'Uncategorized')",
                 (s['suggested_merchant'], s['suggested_category'], s['suggested_subcategory'], pattern, pattern)
-            ).fetchall()
-            updated_count = len(res)
+            )
+            # Rough estimate of updated count for auditing
+            updated_count = conn.execute("SELECT count(*) FROM transactions WHERE merchant = ? AND category = ? AND (description ILIKE ? OR merchant ILIKE ?)", 
+                                         (s['suggested_merchant'], s['suggested_category'], pattern, pattern)).fetchone()[0]
 
         if self.indexer:
             await self.indexer.rebuild_index()

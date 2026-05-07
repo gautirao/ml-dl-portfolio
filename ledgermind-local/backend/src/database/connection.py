@@ -53,7 +53,14 @@ class DatabaseManager:
         """Logs an event to the audit_events table."""
         conn = self.get_connection()
         audit_id = str(uuid.uuid4())
-        metadata_json = json.dumps(metadata) if metadata else None
+        
+        # Handle non-serializable objects like UUID
+        def default_handler(obj):
+            if isinstance(obj, uuid.UUID):
+                return str(obj)
+            raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
+        metadata_json = json.dumps(metadata, default=default_handler) if metadata else None
         
         conn.execute(
             "INSERT INTO audit_events (id, event_type, description, metadata) VALUES (?, ?, ?, ?)",
