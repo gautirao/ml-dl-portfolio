@@ -135,13 +135,22 @@ def detect_recurring_payments(
     
     latency_ms = (time.time() - start_time) * 1000
     
+    query_scope = {
+        k: str(v) for k, v in {
+            "date_from": date_from,
+            "date_to": date_to,
+            "min_occurrences": min_occurrences,
+            "direction": direction,
+            "source_bank": source_bank
+        }.items() if v is not None
+    }
+    if not date_from and not date_to:
+        query_scope["time_range"] = "all_time"
+
     evidence = Evidence(
         tool_name="recurring_payments",
         row_count=len(candidates),
-        query_scope={
-            "min_occurrences": min_occurrences,
-            "direction": direction
-        },
+        query_scope=query_scope,
         calculation_method="heuristic_cadence_analysis"
     )
     

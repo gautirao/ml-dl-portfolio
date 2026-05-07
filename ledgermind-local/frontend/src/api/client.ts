@@ -71,7 +71,7 @@ export const api = {
     formData.append("source_bank_override", bankOverride);
 
     const response = await client.post<ImportSummary>(
-      "/api/import/process",
+      "/api/import",
       formData,
       {
         headers: { "Content-Type": "multipart/form-data" },

@@ -106,9 +106,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </main>
 
       <footer className="bg-white border-t border-gray-200 py-4">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm">
-          &copy; 2026 LedgerMind Local - Built for Portfolio. Privacy-first
-          finance analysis.
+        <div className="max-w-7xl mx-auto px-4 text-center text-gray-500 text-sm space-y-1">
+          <div>
+            &copy; 2026 LedgerMind Local - Built for Portfolio. Privacy-first
+            finance analysis.
+          </div>
+          <div className="text-[10px] font-medium uppercase tracking-tight text-gray-400">
+            This tool provides deterministic data analysis only and does not constitute financial advice.
+          </div>
         </div>
       </footer>
     </div>

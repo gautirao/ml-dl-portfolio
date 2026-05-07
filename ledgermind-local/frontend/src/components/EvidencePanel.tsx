@@ -45,7 +45,7 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({
               <div className="bg-white p-3 rounded border border-gray-200 space-y-1 overflow-x-auto">
                 <p><span className="text-indigo-600">Intent:</span> {plan.intent}</p>
                 <p><span className="text-indigo-600">Tool:</span> {plan.tool}</p>
-                <p><span className="text-indigo-600">Reasoning:</span> {plan.reasoning_summary}</p>
+                <p><span className="text-indigo-600">Plan Strategy:</span> {plan.reasoning_summary}</p>
                 <p><span className="text-indigo-600">Confidence:</span> {(plan.confidence * 100).toFixed(1)}%</p>
               </div>
             </div>

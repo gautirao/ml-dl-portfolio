@@ -96,10 +96,14 @@ def search_transactions(
     
     latency_ms = (time.time() - start_time) * 1000
     
+    query_scope = {k: str(v) for k, v in filters.items() if v is not None}
+    if not date_from and not date_to:
+        query_scope["time_range"] = "all_time"
+        
     evidence = Evidence(
         tool_name="transaction_search",
         row_count=len(transactions),
-        query_scope={k: str(v) for k, v in filters.items() if v is not None},
+        query_scope=query_scope,
         calculation_method="deterministic_sql_query"
     )
     

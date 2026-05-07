@@ -74,16 +74,22 @@ def get_top_merchants(
     
     latency_ms = (time.time() - start_time) * 1000
     
-    evidence = Evidence(
-        tool_name="top_merchants",
-        row_count=len(merchants),
-        query_scope={
-            "date_from": str(date_from),
-            "date_to": str(date_to),
+    query_scope = {
+        k: str(v) for k, v in {
+            "date_from": date_from,
+            "date_to": date_to,
             "direction": direction,
             "category": category,
             "source_bank": source_bank
-        },
+        }.items() if v is not None
+    }
+    if not date_from and not date_to:
+        query_scope["time_range"] = "all_time"
+
+    evidence = Evidence(
+        tool_name="top_merchants",
+        row_count=len(merchants),
+        query_scope=query_scope,
         calculation_method="deterministic_sql_group_by"
     )
     

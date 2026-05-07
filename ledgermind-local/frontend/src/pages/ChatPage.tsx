@@ -165,7 +165,7 @@ const ChatPage: React.FC = () => {
               </div>
               <div className="bg-gray-100 p-4 rounded-2xl rounded-tl-none border border-gray-200 flex items-center gap-2">
                 <Loader2 size={16} className="text-indigo-600 animate-spin" />
-                <span className="text-sm text-gray-500 font-medium italic">Assistant is thinking...</span>
+                <span className="text-sm text-gray-500 font-medium italic">Assistant is planning...</span>
               </div>
             </div>
           )}

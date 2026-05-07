@@ -20,7 +20,6 @@ async def preview_import(
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("")
-@router.post("/process")
 async def execute_import(
     file: UploadFile = File(...),
     source_bank_override: Optional[str] = Form("auto"),
