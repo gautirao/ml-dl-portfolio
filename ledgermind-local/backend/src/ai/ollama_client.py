@@ -50,3 +50,20 @@ class OllamaClient:
         except Exception as e:
             logger.error(f"Ollama chat failed: {e}")
             raise
+
+    async def embeddings(self, model: str, prompt: str) -> List[float]:
+        url = f"{self.base_url}/api/embeddings"
+        payload = {
+            "model": model,
+            "prompt": prompt
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(url, json=payload)
+                response.raise_for_status()
+                data = response.json()
+                return data.get("embedding", [])
+        except Exception as e:
+            logger.error(f"Ollama embeddings failed: {e}")
+            raise

@@ -31,6 +31,10 @@ LedgerMind solves this by:
 -   **Bank Statement Ingestion:**
     -   **Monzo:** Support for rich Monzo CSV exports including merchant metadata and categories.
     -   **HSBC:** Support for minimal HSBC transaction-history CSVs.
+-   **Local Semantic Search:**
+    -   Uses **ChromaDB** for local vector storage of merchants, categories, and descriptions.
+    -   Semantic matching for broad queries like "Show my coffee spending" or "commuting costs".
+    -   **Hybrid Approach:** Semantic search identifies candidates; DuckDB performs the final deterministic calculation.
 -   **Deterministic Analytics:**
     -   Spending summaries (Inflow/Outflow/Net).
     -   Top merchant analysis.
@@ -111,7 +115,8 @@ LedgerMind implements a "No Financial Advice" boundary. It will refuse to give i
 ---
 
 ## 🗺️ Roadmap
--   [ ] **RAG (Retrieval-Augmented Generation):** Vector search for deep semantic search across transaction descriptions.
+-   [x] **Local Semantic Search:** Vector search for merchant and category matching.
+-   [ ] **RAG (Knowledge Base):** Support for chatting with PDFs (bank terms, policy documents).
 -   [ ] **Multi-Currency Support:** Automatic conversion and normalization for international transactions.
 -   [ ] **Advanced Forecasting:** Using lightweight time-series models for budget predictions.
 -   [ ] **Direct API Integration:** Support for Plaid or Open Banking APIs.

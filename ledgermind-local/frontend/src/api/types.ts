@@ -2,6 +2,7 @@ export interface PlannerPlan {
   intent: string;
   tool:
     | "spending_summary"
+    | "semantic_spending_search"
     | "top_merchants"
     | "compare_periods"
     | "recurring_payments"

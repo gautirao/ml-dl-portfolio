@@ -4,6 +4,7 @@ from src.database.connection import db_manager
 from src.api.imports import router as import_router
 from src.api.analytics import router as analytics_router
 from src.api.chat import router as chat_router
+from src.api.search import router as search_router
 import duckdb
 
 app = FastAPI(title="LedgerMind Local API")
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(import_router)
 app.include_router(analytics_router)
 app.include_router(chat_router, prefix="/api")
+app.include_router(search_router)
 
 @app.on_event("startup")
 async def startup_event():

@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List, Union
 from datetime import date
 from src.database.connection import db_manager
 from src.tools.schemas import SpendingSummaryResult, Evidence
@@ -7,8 +7,8 @@ import time
 def get_spending_summary(
     date_from: Optional[date] = None,
     date_to: Optional[date] = None,
-    category: Optional[str] = None,
-    merchant: Optional[str] = None,
+    category: Optional[Union[str, List[str]]] = None,
+    merchant: Optional[Union[str, List[str]]] = None,
     source_bank: Optional[str] = None
 ) -> SpendingSummaryResult:
     start_time = time.time()
@@ -41,11 +41,23 @@ def get_spending_summary(
     }
     
     if category:
-        query += " AND category = ?"
-        params.append(category)
+        if isinstance(category, list):
+            placeholders = ", ".join(["?" for _ in category])
+            query += f" AND category IN ({placeholders})"
+            params.extend(category)
+        else:
+            query += " AND category = ?"
+            params.append(category)
+            
     if merchant:
-        query += " AND merchant ILIKE ?"
-        params.append(f"%{merchant}%")
+        if isinstance(merchant, list):
+            placeholders = ", ".join(["?" for _ in merchant])
+            query += f" AND merchant IN ({placeholders})"
+            params.extend(merchant)
+        else:
+            query += " AND merchant ILIKE ?"
+            params.append(f"%{merchant}%")
+            
     if source_bank:
         query += " AND source_bank = ?"
         params.append(source_bank)

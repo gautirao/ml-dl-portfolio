@@ -78,7 +78,7 @@ async def test_chat_successful_spending_summary(mock_planner, mock_answer_gen):
     # Mock successful answer - use a number that is exactly represented as string of float
     mock_answer_gen.generate_answer.return_value = "You spent 500.0. Based on 10 transactions."
     
-    with patch("src.api.chat.execute_plan") as mock_exec:
+    with patch("src.api.chat.execute_plan", new_callable=AsyncMock) as mock_exec:
         mock_exec.return_value = ToolResult(
             tool_name="spending_summary",
             arguments={"date_from": "2024-01-01", "date_to": "2024-01-31"},
@@ -110,7 +110,7 @@ async def test_chat_verification_failure_fallback(mock_planner, mock_answer_gen)
     mock_answer_gen.generate_answer.return_value = "You spent 9999.99 in January."
     mock_answer_gen.fallback_answer.return_value = "Fallback: You spent 500.0."
     
-    with patch("src.api.chat.execute_plan") as mock_exec:
+    with patch("src.api.chat.execute_plan", new_callable=AsyncMock) as mock_exec:
         mock_exec.return_value = ToolResult(
             tool_name="spending_summary",
             arguments={"date_from": "2024-01-01", "date_to": "2024-01-31"},

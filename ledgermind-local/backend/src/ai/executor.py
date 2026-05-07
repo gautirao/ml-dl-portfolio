@@ -8,10 +8,11 @@ from src.tools.compare_periods import compare_periods
 from src.tools.recurring_payments import detect_recurring_payments
 from src.tools.transaction_search import search_transactions
 from src.tools.category_summary import get_category_summary
+from src.tools.semantic_spending import calculate_semantic_spending
 
 logger = logging.getLogger(__name__)
 
-def execute_plan(plan: PlannerPlan) -> ToolResult:
+async def execute_plan(plan: PlannerPlan) -> ToolResult:
     """
     Executes the tool specified in the plan.
     """
@@ -50,6 +51,12 @@ def execute_plan(plan: PlannerPlan) -> ToolResult:
                 category=args.get("category"),
                 merchant=args.get("merchant"),
                 source_bank=args.get("source_bank")
+            )
+        elif tool_name == "semantic_spending_search":
+            result = await calculate_semantic_spending(
+                query=args.get("query"),
+                date_from=to_date(args.get("date_from")),
+                date_to=to_date(args.get("date_to"))
             )
         elif tool_name == "top_merchants":
             result = get_top_merchants(

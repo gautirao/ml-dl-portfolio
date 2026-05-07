@@ -6,10 +6,11 @@ from pydantic import BaseModel
 from typing import Optional
 
 from src.ai import (
-    OllamaClient, Planner, execute_plan, validate_plan, 
+    OllamaClient, Planner, validate_plan, 
     check_input_guardrail, AnswerGenerator, verify_answer,
     ChatResponse, Guardrails, AuditEvent
 )
+from src.ai.executor import execute_plan
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -65,7 +66,7 @@ async def chat_endpoint(request: ChatRequest):
             )
         
         # 4. Executor
-        tool_result = execute_plan(plan)
+        tool_result = await execute_plan(plan)
         log_audit_event("tool_execution_completed", conversation_id, {
             "tool": plan.tool, 
             "status": tool_result.execution_status,

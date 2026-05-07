@@ -74,6 +74,13 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({
                 <span>Evidence Data</span>
               </div>
               <div className="bg-gray-900 text-gray-300 p-3 rounded border border-gray-800 overflow-x-auto max-h-48 overflow-y-auto">
+                {plan.tool === "semantic_spending_search" && (
+                  <div className="mb-3 p-2 bg-indigo-900/50 border border-indigo-700/50 rounded text-indigo-200">
+                    <p className="font-bold mb-1">ℹ️ Semantic Match Note</p>
+                    <p>Semantic search selected candidate merchants/categories based on your query. 
+                       The final totals shown were calculated deterministically using DuckDB.</p>
+                  </div>
+                )}
                 <pre>{JSON.stringify(evidence, null, 2)}</pre>
               </div>
             </div>
