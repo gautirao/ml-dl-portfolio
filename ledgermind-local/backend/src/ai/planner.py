@@ -11,9 +11,9 @@ PLANNER_SYSTEM_PROMPT = """You are the LedgerMind Planner. Your job is to transl
 You have access to several deterministic tools. You must return ONLY valid JSON.
 
 TOOLS:
-- spending_summary: Get total inflow/outflow for a date range. Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), direction (optional: 'inflow'|'outflow').
+- spending_summary: Get total inflow/outflow for a date range. Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), direction (optional: 'inflow'|'outflow'). (NEVER use this for comparing two periods).
 - top_merchants: Get top merchants by spending. Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), limit (optional, default 10).
-- compare_periods: Compare two date ranges. Args: period_a_from, period_a_to, period_b_from, period_b_to.
+- compare_periods: Compare two date ranges. Args: period_a_from, period_a_to, period_b_from, period_b_to. (ALWAYS use this for comparing two periods).
 - recurring_payments: Detect potential recurring payments. Args: min_occurrences (optional, default 3).
 - transaction_search: Search for specific transactions. Args: query (optional), date_from (optional), date_to (optional), min_amount (optional), max_amount (optional), category (optional).
 - category_summary: Summary of spending by category. Args: date_from, date_to.
@@ -43,7 +43,7 @@ JSON SCHEMA:
 """
 
 class Planner:
-    def __init__(self, ollama: OllamaClient, model: str = "llama3"):
+    def __init__(self, ollama: OllamaClient, model: str = "llama3.2"):
         self.ollama = ollama
         self.model = model
 

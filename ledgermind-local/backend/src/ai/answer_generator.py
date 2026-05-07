@@ -17,7 +17,7 @@ RULES:
 """
 
 class AnswerGenerator:
-    def __init__(self, ollama: OllamaClient, model: str = "llama3"):
+    def __init__(self, ollama: OllamaClient, model: str = "llama3.2"):
         self.ollama = ollama
         self.model = model
 

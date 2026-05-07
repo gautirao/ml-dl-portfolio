@@ -47,13 +47,15 @@ def execute_plan(plan: PlannerPlan) -> ToolResult:
             result = get_spending_summary(
                 date_from=to_date(args.get("date_from")),
                 date_to=to_date(args.get("date_to")),
-                direction=args.get("direction")
+                category=args.get("category"),
+                merchant=args.get("merchant"),
+                source_bank=args.get("source_bank")
             )
         elif tool_name == "top_merchants":
             result = get_top_merchants(
                 date_from=to_date(args.get("date_from")),
                 date_to=to_date(args.get("date_to")),
-                limit=args.get("limit", 10)
+                limit=int(args.get("limit", 10))
             )
         elif tool_name == "compare_periods":
             result = compare_periods(
