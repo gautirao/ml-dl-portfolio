@@ -37,12 +37,12 @@ RULES:
 JSON SCHEMA:
 {{
   "intent": "string",
-  "tool": "spending_summary|semantic_spending_search|top_merchants|compare_periods|recurring_payments|transaction_search|category_summary|knowledge_lookup|clarification|out_of_scope",
+  "tool": "spending_summary" | "semantic_spending_search" | "top_merchants" | "compare_periods" | "recurring_payments" | "transaction_search" | "category_summary" | "knowledge_lookup" | "clarification" | "out_of_scope",
   "arguments": {{}},
-  "confidence": 0.0,
+  "confidence": 1.0,
   "requires_clarification": false,
   "clarification_question": null,
-  "risk_level": "low|medium|high",
+  "risk_level": "low" | "medium" | "high",
   "reasoning_summary": "brief user-visible summary"
 }}
 """
