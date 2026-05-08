@@ -116,7 +116,8 @@ def detect_recurring_payments(
                 amount=float(r[6]),
                 direction=r[7],
                 category=r[8],
-                raw_row_json=json.loads(r[9]) if r[9] else None
+                effective_category=r[8], # Simplified as we don't join with overrides here yet
+                category_source="imported"
             ))
             
         candidates.append(RecurringCandidate(

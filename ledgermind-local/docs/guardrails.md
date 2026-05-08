@@ -33,6 +33,12 @@ A critical guardrail against "Categorization Drift":
 -   **Mandatory Review:** A human must explicitly approve or edit a suggestion before it becomes a deterministic rule.
 -   **Rule Priority:** User-defined rules always override AI semantic suggestions. This prevents the LLM from "overwriting" human intent.
 
+### 6. Transaction-level Overrides
+The ultimate fallback for accuracy:
+-   **Exception Handling:** Users can override any single transaction's category.
+-   **No AI Overwrite:** Once a user has manually corrected a transaction, AI suggestions and merchant rules are ignored for that specific transaction.
+-   **Audit Trail:** The original category is preserved in the database, while the `effective_category` reflects the user's manual correction.
+
 ## Audit Logging & Transparency
 Every AI interaction is logged to the `audit_events` table in DuckDB (locally). This includes:
 -   The user's query.

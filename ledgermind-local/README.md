@@ -99,6 +99,10 @@ A `Makefile` is provided in the root directory:
     -   AI suggests categories and merchant normalization based on semantic matching.
     -   Users approve, reject, or edit suggestions before they become deterministic rules.
     -   Approved rules are automatically applied to future imports, ensuring long-term data consistency.
+-   **Transaction-level Category Overrides:**
+    -   Hand-correct specific transactions (e.g., a Sainsbury’s shop that was actually fuel) without breaking broad merchant rules.
+    -   User overrides take absolute priority over AI suggestions and imported categories.
+    -   Full history of changes is tracked for transparency.
 -   **Execution Trace:** A collapsible "Planner & Evidence" panel in the UI that proves how the AI reached its answer.
 -   **Privacy-First:** No cloud sync, no tracking, no data leaves your device.
 

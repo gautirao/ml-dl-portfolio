@@ -70,3 +70,17 @@ CREATE TABLE IF NOT EXISTS category_suggestions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reviewed_at TIMESTAMP
 );
+
+-- 6. Transaction-level Category Overrides
+CREATE TABLE IF NOT EXISTS transaction_category_overrides (
+    id UUID PRIMARY KEY,
+    transaction_id UUID NOT NULL,
+    original_category VARCHAR,
+    new_category VARCHAR NOT NULL,
+    new_subcategory VARCHAR,
+    reason VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indices for overrides
+CREATE INDEX IF NOT EXISTS idx_tco_transaction_id ON transaction_category_overrides(transaction_id);

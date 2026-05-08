@@ -109,7 +109,13 @@ Bridging the gap between AI suggestions and deterministic rules.
 -   **Rule Engine:** Stores user-approved mappings in a `merchant_rules` table. These rules are prioritized over semantic suggestions and applied automatically during ingestion.
 -   **Review Workflow:** A dedicated UI section where users "train" the system by approving or correcting AI suggestions, creating a virtuous cycle of data quality.
 
-### 5. AI Orchestrator (Planner-Executor)
+### 6. Transaction Overrides Layer
+Handling the "exception to the rule."
+-   **Granular Control:** While merchant rules handle broad patterns, overrides allow users to fix individual transactions.
+-   **Effective Category Logic:** A resolution layer (`effective_category`) ensures that the Priority is: User Override > Merchant Rule > Imported Category > Uncategorised.
+-   **Persistence:** Overrides are stored in a dedicated `transaction_category_overrides` table, preserving the original imported data for auditability.
+
+### 7. AI Orchestrator (Planner-Executor)
 This is the "brain" of the application.
 -   **Planner:** Interprets the user's natural language and selects the appropriate tool and arguments.
 -   **Executor:** Runs the tool and captures "evidence" (raw data, query parameters, row counts).

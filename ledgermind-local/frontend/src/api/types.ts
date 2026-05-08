@@ -53,8 +53,16 @@ export interface Transaction {
   currency: string;
   direction: "inflow" | "outflow";
   category: string;
+  effective_category?: string;
+  category_source?: "override" | "merchant_rule" | "imported" | "uncategorised";
   transaction_fingerprint: string;
   raw_row_json?: string;
+}
+
+export interface CategoryOverrideRequest {
+  new_category: string;
+  new_subcategory?: string;
+  reason?: string;
 }
 
 export interface ImportPreview {

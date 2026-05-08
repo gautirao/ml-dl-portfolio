@@ -22,32 +22,37 @@ def get_top_merchants(
     
     query = """
         SELECT 
-            COALESCE(merchant, description) as merchant_name,
-            SUM(amount) as total_amount,
+            COALESCE(t.merchant, t.description) as merchant_name,
+            SUM(t.amount) as total_amount,
             COUNT(*) as transaction_count,
-            MIN(transaction_date) as first_date,
-            MAX(transaction_date) as last_date
-        FROM transactions 
+            MIN(t.transaction_date) as first_date,
+            MAX(t.transaction_date) as last_date
+        FROM transactions t
+        LEFT JOIN (
+            SELECT transaction_id, new_category
+            FROM transaction_category_overrides
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY created_at DESC) = 1
+        ) tco ON t.id = tco.transaction_id
         WHERE 1=1
     """
     params = []
     
     if date_from:
-        query += " AND transaction_date >= ?"
+        query += " AND t.transaction_date >= ?"
         params.append(date_from)
     if date_to:
-        query += " AND transaction_date <= ?"
+        query += " AND t.transaction_date <= ?"
         params.append(date_to)
         
-    query += " AND direction = ?"
+    query += " AND t.direction = ?"
     params.append(direction)
-    query += " AND COALESCE(merchant, description) IS NOT NULL AND COALESCE(merchant, description) != ''"
+    query += " AND COALESCE(t.merchant, t.description) IS NOT NULL AND COALESCE(t.merchant, t.description) != ''"
     
     if category:
-        query += " AND category = ?"
+        query += " AND COALESCE(tco.new_category, t.category) = ?"
         params.append(category)
     if source_bank:
-        query += " AND source_bank = ?"
+        query += " AND t.source_bank = ?"
         params.append(source_bank)
         
     query += " GROUP BY merchant_name"

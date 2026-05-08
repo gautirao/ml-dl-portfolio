@@ -21,13 +21,38 @@ def search_transactions(
     start_time = time.time()
     conn = db_manager.get_connection()
     
-    # Base query
-    query = "SELECT id, source_bank, transaction_date, description, merchant, amount, direction, category, raw_row_json FROM transactions WHERE 1=1"
+    # Base query with effective_category and category_source
+    query = """
+        SELECT 
+            t.id, t.source_bank, t.transaction_date, t.description, t.merchant, t.amount, t.direction, t.category, t.raw_row_json,
+            tco.new_category as override_category,
+            CASE 
+                WHEN tco.new_category IS NOT NULL THEN 'override'
+                WHEN t.category IS NULL OR t.category = '' OR t.category = 'Uncategorized' THEN 'uncategorised'
+                WHEN EXISTS (SELECT 1 FROM merchant_rules mr WHERE mr.merchant_name = t.merchant AND mr.category = t.category) THEN 'merchant_rule'
+                ELSE 'imported'
+            END as category_source
+        FROM transactions t
+        LEFT JOIN (
+            SELECT transaction_id, new_category
+            FROM transaction_category_overrides
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY created_at DESC) = 1
+        ) tco ON t.id = tco.transaction_id
+        WHERE 1=1
+    """
     params = []
     
-    # Count query
-    count_query = "SELECT count(*) FROM transactions WHERE 1=1"
-    count_params = []
+    # Count query needs the same join if we filter by effective category
+    count_query = """
+        SELECT count(*) 
+        FROM transactions t
+        LEFT JOIN (
+            SELECT transaction_id, new_category
+            FROM transaction_category_overrides
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY created_at DESC) = 1
+        ) tco ON t.id = tco.transaction_id
+        WHERE 1=1
+    """
     
     filters = {
         "source_bank": source_bank,
@@ -43,28 +68,28 @@ def search_transactions(
     # Filter builder
     filter_clauses = ""
     if source_bank:
-        filter_clauses += " AND source_bank = ?"
+        filter_clauses += " AND t.source_bank = ?"
         params.append(source_bank)
     if date_from:
-        filter_clauses += " AND transaction_date >= ?"
+        filter_clauses += " AND t.transaction_date >= ?"
         params.append(date_from)
     if date_to:
-        filter_clauses += " AND transaction_date <= ?"
+        filter_clauses += " AND t.transaction_date <= ?"
         params.append(date_to)
     if direction:
-        filter_clauses += " AND direction = ?"
+        filter_clauses += " AND t.direction = ?"
         params.append(direction)
     if merchant:
-        filter_clauses += " AND merchant ILIKE ?"
+        filter_clauses += " AND t.merchant ILIKE ?"
         params.append(f"%{merchant}%")
     if category:
-        filter_clauses += " AND category = ?"
+        filter_clauses += " AND COALESCE(tco.new_category, t.category) = ?"
         params.append(category)
     if min_amount is not None:
-        filter_clauses += " AND abs(amount) >= ?"
+        filter_clauses += " AND abs(t.amount) >= ?"
         params.append(min_amount)
     if max_amount is not None:
-        filter_clauses += " AND abs(amount) <= ?"
+        filter_clauses += " AND abs(t.amount) <= ?"
         params.append(max_amount)
 
     query += filter_clauses
@@ -73,7 +98,7 @@ def search_transactions(
     count_params = list(params)
     
     # Sorting and Pagination
-    query += " ORDER BY transaction_date DESC, id DESC LIMIT ? OFFSET ?"
+    query += " ORDER BY t.transaction_date DESC, t.id DESC LIMIT ? OFFSET ?"
     params.extend([limit, offset])
     
     # Execute
@@ -91,7 +116,9 @@ def search_transactions(
             amount=float(r[5]),
             direction=r[6],
             category=r[7],
-            raw_row_json=json.loads(r[8]) if r[8] else None
+            effective_category=r[9] if r[9] else r[7],
+            category_source=r[10]
+            # raw_row_json is excluded by default for privacy/efficiency
         ))
     
     latency_ms = (time.time() - start_time) * 1000

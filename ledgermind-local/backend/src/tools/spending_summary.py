@@ -16,20 +16,25 @@ def get_spending_summary(
     
     query = """
         SELECT 
-            SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) as total_inflow,
-            SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) as total_outflow,
-            SUM(amount) as net_amount,
+            SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END) as total_inflow,
+            SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END) as total_outflow,
+            SUM(t.amount) as net_amount,
             COUNT(*) as transaction_count
-        FROM transactions 
+        FROM transactions t
+        LEFT JOIN (
+            SELECT transaction_id, new_category
+            FROM transaction_category_overrides
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY created_at DESC) = 1
+        ) tco ON t.id = tco.transaction_id
         WHERE 1=1
     """
     params = []
     
     if date_from:
-        query += " AND transaction_date >= ?"
+        query += " AND t.transaction_date >= ?"
         params.append(date_from)
     if date_to:
-        query += " AND transaction_date <= ?"
+        query += " AND t.transaction_date <= ?"
         params.append(date_to)
     
     filters = {
@@ -43,23 +48,23 @@ def get_spending_summary(
     if category:
         if isinstance(category, list):
             placeholders = ", ".join(["?" for _ in category])
-            query += f" AND category IN ({placeholders})"
+            query += f" AND COALESCE(tco.new_category, t.category) IN ({placeholders})"
             params.extend(category)
         else:
-            query += " AND category = ?"
+            query += " AND COALESCE(tco.new_category, t.category) = ?"
             params.append(category)
             
     if merchant:
         if isinstance(merchant, list):
             placeholders = ", ".join(["?" for _ in merchant])
-            query += f" AND merchant IN ({placeholders})"
+            query += f" AND t.merchant IN ({placeholders})"
             params.extend(merchant)
         else:
-            query += " AND merchant ILIKE ?"
+            query += " AND t.merchant ILIKE ?"
             params.append(f"%{merchant}%")
             
     if source_bank:
-        query += " AND source_bank = ?"
+        query += " AND t.source_bank = ?"
         params.append(source_bank)
         
     result = conn.execute(query, params).fetchone()

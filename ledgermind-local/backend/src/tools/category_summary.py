@@ -14,29 +14,34 @@ def get_category_summary(
     
     query = """
         SELECT 
-            COALESCE(category, 'uncategorised') as cat_name,
-            SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END) as total_inflow,
-            SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END) as total_outflow,
-            SUM(amount) as net_amount,
+            COALESCE(COALESCE(tco.new_category, t.category), 'uncategorised') as cat_name,
+            SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END) as total_inflow,
+            SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END) as total_outflow,
+            SUM(t.amount) as net_amount,
             COUNT(*) as transaction_count
-        FROM transactions 
+        FROM transactions t
+        LEFT JOIN (
+            SELECT transaction_id, new_category
+            FROM transaction_category_overrides
+            QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY created_at DESC) = 1
+        ) tco ON t.id = tco.transaction_id
         WHERE 1=1
     """
     params = []
     
     if date_from:
-        query += " AND transaction_date >= ?"
+        query += " AND t.transaction_date >= ?"
         params.append(date_from)
     if date_to:
-        query += " AND transaction_date <= ?"
+        query += " AND t.transaction_date <= ?"
         params.append(date_to)
     
     if source_bank:
-        query += " AND source_bank = ?"
+        query += " AND t.source_bank = ?"
         params.append(source_bank)
         
     query += " GROUP BY cat_name"
-    query += " ORDER BY abs(SUM(CASE WHEN amount < 0 THEN amount ELSE 0 END)) DESC"
+    query += " ORDER BY abs(SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END)) DESC"
     
     results = conn.execute(query, params).fetchall()
     

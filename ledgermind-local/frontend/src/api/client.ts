@@ -163,4 +163,19 @@ export const api = {
     const response = await client.post(`/api/categories/suggestions/${id}/edit`, data);
     return response.data;
   },
+
+  // Transaction Overrides
+  applyCategoryOverride: async (transactionId: string, data: {
+    new_category: string;
+    new_subcategory?: string;
+    reason?: string;
+  }): Promise<any> => {
+    const response = await client.post(`/api/transactions/${transactionId}/category-override`, data);
+    return response.data;
+  },
+
+  removeCategoryOverride: async (transactionId: string): Promise<any> => {
+    const response = await client.delete(`/api/transactions/${transactionId}/category-override`);
+    return response.data;
+  },
 };

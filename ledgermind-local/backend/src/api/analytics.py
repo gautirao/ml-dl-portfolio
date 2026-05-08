@@ -9,11 +9,51 @@ from src.tools.category_summary import get_category_summary
 from src.tools.recurring_payments import detect_recurring_payments
 from src.tools.schemas import (
     TransactionSearchResult, SpendingSummaryResult, TopMerchantsResult,
-    ComparePeriodsResult, CategorySummaryResult, RecurringPaymentsResult
+    ComparePeriodsResult, CategorySummaryResult, RecurringPaymentsResult,
+    CategoryOverrideRequest
 )
 from src.database.connection import db_manager
+from src.categories.overrides import (
+    create_transaction_override, delete_transaction_override, get_transaction_override_history
+)
 
 router = APIRouter(prefix="/api", tags=["analytics"])
+
+@router.post("/transactions/{transaction_id}/category-override")
+async def apply_category_override(
+    transaction_id: str,
+    request: CategoryOverrideRequest
+):
+    try:
+        override_id = create_transaction_override(
+            transaction_id=transaction_id,
+            new_category=request.new_category,
+            new_subcategory=request.new_subcategory,
+            reason=request.reason
+        )
+        return {"status": "success", "override_id": override_id}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        db_manager.log_event("transaction_override_failed", f"Failed to apply override: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/transactions/{transaction_id}/category-override")
+async def remove_category_override(transaction_id: str):
+    try:
+        delete_transaction_override(transaction_id)
+        return {"status": "success", "message": "Override removed"}
+    except Exception as e:
+        db_manager.log_event("transaction_override_failed", f"Failed to remove override: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/transactions/{transaction_id}/category-history")
+async def get_category_history(transaction_id: str):
+    try:
+        history = get_transaction_override_history(transaction_id)
+        return history
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/transactions", response_model=TransactionSearchResult)
 async def get_transactions(

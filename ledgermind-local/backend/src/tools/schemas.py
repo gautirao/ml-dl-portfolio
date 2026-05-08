@@ -21,7 +21,14 @@ class TransactionItem(BaseModel):
     amount: float
     direction: str
     category: Optional[str]
-    raw_row_json: Optional[Dict[str, Any]]
+    effective_category: Optional[str] = None
+    category_source: str = "imported"
+    raw_row_json: Optional[Dict[str, Any]] = None
+
+class CategoryOverrideRequest(BaseModel):
+    new_category: str
+    new_subcategory: Optional[str] = None
+    reason: Optional[str] = None
 
 class TransactionSearchResult(AnalyticsResult):
     transactions: List[TransactionItem]

@@ -134,7 +134,11 @@ const TransactionsPage: React.FC = () => {
         </div>
       </div>
 
-      <TransactionTable transactions={transactions} isLoading={isLoading} />
+      <TransactionTable 
+        transactions={transactions} 
+        isLoading={isLoading} 
+        onRefresh={fetchTransactions}
+      />
     </div>
   );
 };
