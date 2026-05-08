@@ -42,6 +42,7 @@ The Executor is a deterministic Python module that takes the Plan and routes it 
 LedgerMind has a fixed registry of tools. The Planner is strictly forbidden from inventing new tools.
 -   `spending_summary`: Basic aggregation for specific entities.
 -   `semantic_spending_search`: **Hybrid tool** introduced in Milestone 7. It uses a local vector store (ChromaDB) to find related merchants/categories before running a deterministic summary.
+-   `semantic_top_merchants`: **Hybrid ranking tool** introduced in Milestone 11B. It uses semantic search to find candidates and then DuckDB to rank them by frequency or spend.
 -   `top_merchants`: Ranking tool.
 -   `compare_periods`: Period-over-period analysis.
 -   `recurring_payments`: Cadence detection.
@@ -49,11 +50,11 @@ LedgerMind has a fixed registry of tools. The Planner is strictly forbidden from
 -   `knowledge_lookup`: **RAG tool** introduced in Milestone 9. It performs vector search against the local knowledge base to answer system-related questions (e.g., "How are Monzo files handled?").
 
 ### 4. The Hybrid Semantic Flow
-When a user asks a broad query like "What did I spend on takeaways?", the workflow expands:
-1.  **Planner:** Recognizes the semantic nature and selects `semantic_spending_search`.
-2.  **Semantic Matcher:** Queries ChromaDB for "takeaways" and finds matches like "Uber Eats", "Deliveroo", and the category "Food & Drink".
-3.  **Executor:** Passes these candidates to the deterministic engine.
-4.  **Evidence:** The Evidence Panel shows the semantic matches used, ensuring the user knows *why* specific merchants were included in the "takeaway" total.
+When a user asks a broad query like "What did I spend on takeaways?" or "Where do I buy coffee?", the workflow expands:
+1.  **Planner:** Recognizes the semantic nature and selects `semantic_spending_search` or `semantic_top_merchants`.
+2.  **Semantic Matcher:** Queries ChromaDB for the concept (e.g., "takeaways") and finds matches like "Uber Eats", "Deliveroo", and the category "Food & Drink".
+3.  **Executor:** Passes these candidates to the deterministic engine (DuckDB).
+4.  **Evidence:** The Evidence Panel shows the semantic matches used and the ranking criteria, ensuring the user knows *why* specific merchants were included.
 
 ### 5. Answer Generation & Evidence
 Once the tool returns data, a final LLM pass (the **Answer Generator**) converts the raw numbers into a user-friendly response. Crucially, the UI displays the **Execution Trace** alongside the answer.

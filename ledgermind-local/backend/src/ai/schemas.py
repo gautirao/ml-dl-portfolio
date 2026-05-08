@@ -7,6 +7,7 @@ class PlannerPlan(BaseModel):
     tool: Literal[
         "spending_summary",
         "semantic_spending_search",
+        "semantic_top_merchants",
         "top_merchants",
         "compare_periods",
         "recurring_payments",
@@ -30,9 +31,10 @@ class PlannerPlan(BaseModel):
             return data
             
         valid_tools = [
-            "spending_summary", "semantic_spending_search", "top_merchants",
-            "compare_periods", "recurring_payments", "transaction_search",
-            "category_summary", "knowledge_lookup", "clarification", "out_of_scope"
+            "spending_summary", "semantic_spending_search", "semantic_top_merchants", 
+            "top_merchants", "compare_periods", "recurring_payments", 
+            "transaction_search", "category_summary", "knowledge_lookup", 
+            "clarification", "out_of_scope"
         ]
         
         # If tool is missing or invalid, try to infer from intent
@@ -50,6 +52,10 @@ class PlannerPlan(BaseModel):
         # Ensure arguments exists
         if "arguments" not in data or not isinstance(data["arguments"], dict):
             data["arguments"] = {}
+
+        # Handle null confidence
+        if data.get("confidence") is None:
+            data["confidence"] = 1.0
             
         # Move top-level keys to arguments if they belong there
         for key in ["query", "date_from", "date_to", "merchant", "category", "limit"]:

@@ -90,11 +90,12 @@ To ensure 100% numerical accuracy, calculations are never performed by the LLM. 
 -   `transaction_search`: High-performance filtering and full-text search.
 
 ### 3. Semantic Search Layer
-Introduced in Milestone 7 to handle broad or conceptual queries.
+Introduced in Milestone 7 and expanded in Milestone 11B.
 -   **Vector Store (ChromaDB):** Stores embeddings of merchant names, categories, and transaction descriptions.
 -   **Embedding Client:** Uses local Ollama embeddings (`llama3.2`) to vectorize text.
 -   **Hybrid Matcher:** When a user asks a broad question (e.g., "Show my coffee spending"), the system uses vector search to find relevant candidate merchants (Starbucks, Costa) and categories (Coffee).
--   **Execution:** The candidate list is then passed to the deterministic `spending_summary` tool for final calculation. This ensures semantic flexibility without sacrificing numerical accuracy.
+-   **Semantic Top Merchants:** Supports conceptual ranking queries like "Where do I buy coffee most often?". It identifies candidates semantically and then uses DuckDB to group and rank them by transaction count or total spend.
+-   **Execution:** Candidate lists are passed to deterministic tools (`spending_summary` or `semantic_top_merchants`) for final calculation. This ensures semantic flexibility without sacrificing numerical accuracy.
 
 ### 4. Local RAG Knowledge Base Layer
 Introduced in Milestone 9 to provide grounded system explanations.

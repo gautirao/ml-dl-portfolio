@@ -13,7 +13,9 @@ You have access to several deterministic tools. You must return ONLY valid JSON.
 TOOLS:
 - spending_summary: Get total inflow/outflow for a date range for a SPECIFIC merchant or category. Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), merchant (optional), category (optional).
 - semantic_spending_search: Use this for broad or semantic spending queries like 'coffee', 'takeaways', 'commuting', 'subscriptions'. It will find related merchants/categories. Args: query (REQUIRED string), date_from (optional), date_to (optional).
-- top_merchants: Get top merchants by spending. Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), limit (optional, default 10).
+- semantic_top_merchants: Use this for semantic queries about where you buy things or which shops you use (e.g., 'Which shops do I buy coffee at?', 'Where do I buy coffee most often?', 'Where do I spend most on takeaways?', 'Which grocery shops do I use most?'). It ranks merchants by transaction count or total spend. Args: query (REQUIRED string), date_from (optional), date_to (optional), rank_by (optional, 'transaction_count' or 'total_spend', default 'transaction_count').
+- top_merchants: Get top merchants by spending.
+ Args: date_from (YYYY-MM-DD), date_to (YYYY-MM-DD), limit (optional, default 10).
 - compare_periods: Compare two date ranges. Args: period_a_from, period_a_to, period_b_from, period_b_to. (ALWAYS use this for comparing two periods).
 - recurring_payments: Detect potential recurring payments. Args: min_occurrences (optional, default 3).
 - transaction_search: Search for specific transactions. Args: query (optional), date_from (optional), date_to (optional), min_amount (optional), max_amount (optional), category (optional).
@@ -37,7 +39,7 @@ RULES:
 JSON SCHEMA:
 {{
   "intent": "string",
-  "tool": "spending_summary" | "semantic_spending_search" | "top_merchants" | "compare_periods" | "recurring_payments" | "transaction_search" | "category_summary" | "knowledge_lookup" | "clarification" | "out_of_scope",
+  "tool": "spending_summary" | "semantic_spending_search" | "semantic_top_merchants" | "top_merchants" | "compare_periods" | "recurring_payments" | "transaction_search" | "category_summary" | "knowledge_lookup" | "clarification" | "out_of_scope",
   "arguments": {{}},
   "confidence": 1.0,
   "requires_clarification": false,

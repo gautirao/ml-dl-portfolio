@@ -81,6 +81,13 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({
                        The final totals shown were calculated deterministically using DuckDB.</p>
                   </div>
                 )}
+                {plan.tool === "semantic_top_merchants" && (
+                  <div className="mb-3 p-2 bg-indigo-900/50 border border-indigo-700/50 rounded text-indigo-200">
+                    <p className="font-bold mb-1">ℹ️ Semantic Top Merchants Note</p>
+                    <p>Semantic search selected candidate merchants/categories based on your query. 
+                       DuckDB was then used to group and rank these candidates deterministically.</p>
+                  </div>
+                )}
                 {plan.tool === "knowledge_lookup" && evidence.knowledge_sources && (
                   <div className="mb-3 space-y-2">
                     <p className="font-bold text-indigo-400 mb-1">📚 Knowledge Sources</p>

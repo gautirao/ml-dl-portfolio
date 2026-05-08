@@ -56,6 +56,12 @@ class MerchantSummary(BaseModel):
 class TopMerchantsResult(AnalyticsResult):
     merchants: List[MerchantSummary]
 
+class SemanticTopMerchantsResult(AnalyticsResult):
+    merchants: List[MerchantSummary]
+    semantic_matches: List[Dict[str, Any]]
+    merchants_included: List[str]
+    categories_included: List[str]
+
 class PeriodSummary(BaseModel):
     total_outflow: float
     total_inflow: float

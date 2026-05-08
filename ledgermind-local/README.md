@@ -84,6 +84,7 @@ A `Makefile` is provided in the root directory:
 -   **Local Semantic Search:**
     -   Uses **ChromaDB** for local vector storage of merchants, categories, and descriptions.
     -   Semantic matching for broad queries like "Show my coffee spending" or "commuting costs".
+    -   **Semantic Top Merchants:** Answers questions like "Which shops do I buy coffee at the most?" or "Where do I spend most on takeaways?" by identifying candidates semantically and ranking them via DuckDB.
     -   **Hybrid Approach:** Semantic search identifies candidates; DuckDB performs the final deterministic calculation.
 -   **Deterministic Analytics:**
     -   Spending summaries (Inflow/Outflow/Net).

@@ -7,6 +7,7 @@ from src.search.embedding_client import OllamaEmbeddingClient
 from src.search.indexer import Indexer
 from src.search.semantic_matcher import SemanticMatcher
 from src.tools.semantic_spending import calculate_semantic_spending, SemanticSpendingResult
+from src.tools.semantic_top_merchants import calculate_semantic_top_merchants, SemanticTopMerchantsResult
 from src.database.connection import settings
 
 router = APIRouter(prefix="/api/search", tags=["search"])
@@ -16,6 +17,13 @@ class SemanticSpendingRequest(BaseModel):
     date_from: Optional[date] = None
     date_to: Optional[date] = None
     limit: int = 20
+
+class SemanticTopMerchantsRequest(BaseModel):
+    query: str
+    date_from: Optional[date] = None
+    date_to: Optional[date] = None
+    rank_by: str = "transaction_count"
+    limit: int = 10
 
 def get_vector_store():
     return VectorStore(persist_directory=settings.vector_store_path)
@@ -78,5 +86,17 @@ async def semantic_spending(
         query=request.query,
         date_from=request.date_from,
         date_to=request.date_to,
+        limit=request.limit
+    )
+
+@router.post("/semantic-top-merchants", response_model=SemanticTopMerchantsResult)
+async def semantic_top_merchants(
+    request: SemanticTopMerchantsRequest
+):
+    return await calculate_semantic_top_merchants(
+        query=request.query,
+        date_from=request.date_from,
+        date_to=request.date_to,
+        rank_by=request.rank_by,
         limit=request.limit
     )

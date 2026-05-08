@@ -60,6 +60,9 @@ class AnswerGenerator:
         elif tool == "top_merchants":
             merchants = [f"{m['merchant']} ({m['total_amount']})" for m in res.get("merchants", [])[:3]]
             summary += f"Top merchants: {', '.join(merchants)}."
+        elif tool == "semantic_top_merchants":
+            merchants = [f"{m['merchant']} ({m['transaction_count']} times)" for m in res.get("merchants", [])[:3]]
+            summary += f"Top semantic merchants: {', '.join(merchants)}."
         elif tool == "clarification":
             summary = res.get("message", "I need more information to help you.")
         elif tool == "knowledge_lookup":

@@ -3,6 +3,7 @@ export interface PlannerPlan {
   tool:
     | "spending_summary"
     | "semantic_spending_search"
+    | "semantic_top_merchants"
     | "top_merchants"
     | "compare_periods"
     | "recurring_payments"
