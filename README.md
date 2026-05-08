@@ -27,6 +27,12 @@ A production-ready deep learning package for classifying chest X-rays to detect 
 - **Key Concepts:** Computer Vision, Transfer Learning, DICOM image processing, modular CLI (Train/Evaluate/Predict), and detailed performance metrics (Precision, Recall, F1).
 - **Use Case:** Identifying "lung opacities" in medical radiographs from the RSNA Pneumonia Detection Challenge.
 
+### 5. [LedgerMind Local](./ledgermind-local/)
+**The "Trust-but-Verify" AI Accountant**
+A privacy-first, local-AI financial assistant that uses a **Planner-Executor architecture** to analyze bank statements without data leaving the user's machine.
+- **Key Concepts:** Planner-Executor Pattern, Local LLM (Ollama/llama3.2), Deterministic SQL Execution (DuckDB), Local RAG for system explanations, Human-in-the-Loop Categorization, and Evidence-Based AI (Execution Trace).
+- **Use Case:** Securely analyzing personal spending patterns while ensuring 100% numerical accuracy through deterministic calculations instead of LLM arithmetic.
+
 ---
 
 ## 🚀 How to Get Started
