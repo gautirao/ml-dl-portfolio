@@ -9,6 +9,7 @@ from src.tools.recurring_payments import detect_recurring_payments
 from src.tools.transaction_search import search_transactions
 from src.tools.category_summary import get_category_summary
 from src.tools.semantic_spending import calculate_semantic_spending
+from src.tools.semantic_top_merchants import calculate_semantic_top_merchants
 from src.tools.knowledge_lookup import knowledge_lookup
 
 logger = logging.getLogger(__name__)
@@ -91,6 +92,15 @@ async def execute_plan(plan: PlannerPlan) -> ToolResult:
                 date_from=to_date(args.get("date_from")),
                 date_to=to_date(args.get("date_to"))
             )
+        elif tool_name == "semantic_top_merchants":
+            query = args.get("query") or plan.intent
+            result = await calculate_semantic_top_merchants(
+                query=query,
+                date_from=to_date(args.get("date_from")),
+                date_to=to_date(args.get("date_to")),
+                rank_by=args.get("rank_by", "transaction_count"),
+                limit=int(args.get("limit", 10))
+            )
         elif tool_name == "knowledge_lookup":
             result = await knowledge_lookup(
                 query=args.get("query") or plan.intent
@@ -98,12 +108,19 @@ async def execute_plan(plan: PlannerPlan) -> ToolResult:
         else:
             raise ValueError(f"Unsupported tool: {tool_name}")
 
-        # result is a Pydantic model (AnalyticsResult subclass)
+        # result is a Pydantic model (AnalyticsResult subclass) or similar
+        evidence = {}
+        if hasattr(result, 'evidence'):
+            if isinstance(result.evidence, dict):
+                evidence = result.evidence
+            else:
+                evidence = result.evidence.model_dump()
+        
         return ToolResult(
             tool_name=tool_name,
             arguments=args,
             result=result.model_dump(),
-            evidence=result.evidence.model_dump() if hasattr(result, 'evidence') else {},
+            evidence=evidence,
             execution_status="success"
         )
 

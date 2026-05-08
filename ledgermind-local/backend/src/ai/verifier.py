@@ -20,42 +20,41 @@ def verify_answer(answer: str, tool_result: ToolResult) -> bool:
     # This is a basic check. A more robust one would use fuzzy matching or named entity recognition.
     numbers_in_answer = re.findall(r"[-+]?\d*\.\d+|\d+", answer)
     
-    # Flatten tool_result.result to check for numbers
-    def flatten_values(d: Any) -> List[str]:
-        values = []
+    # Flat list of all numbers in tool result as floats for robust comparison
+    def extract_numbers(d: Any) -> List[float]:
+        nums = []
         if isinstance(d, dict):
             for v in d.values():
-                values.extend(flatten_values(v))
+                nums.extend(extract_numbers(v))
         elif isinstance(d, list):
             for v in d:
-                values.extend(flatten_values(v))
+                nums.extend(extract_numbers(v))
         else:
-            # Convert to string
-            s = str(d)
-            values.append(s)
-            # If it's a number, also add its float representation as a string
-            try:
-                f = float(s)
-                values.append(str(f))
-                # Also add integer if it's a whole number
-                if f == int(f):
-                    values.append(str(int(f)))
-            except (ValueError, TypeError):
-                pass
-        return values
+            # Extract all potential numbers from the string representation
+            # This handles dates (2024-01-01 -> 2024, 1, 1) and other formatted strings
+            found = re.findall(r"[-+]?\d*\.\d+|\d+", str(d))
+            for f_str in found:
+                try:
+                    nums.append(float(f_str))
+                except (ValueError, TypeError):
+                    pass
+        return nums
 
-    allowed_values = flatten_values(tool_result.result)
-    
-    # Also allow numbers from arguments (e.g. dates, limits)
-    allowed_values.extend(flatten_values(tool_result.arguments))
+    allowed_nums = extract_numbers(tool_result.result)
+    allowed_nums.extend(extract_numbers(tool_result.arguments))
     
     # Basic validation: every number in the answer should be related to the tool result
-    # We allow small numbers (like 1, 2, 3) which might be used for lists or phrasing
-    for num in numbers_in_answer:
-        if len(num) > 1 and num not in allowed_values:
-            # Check if it's a substring of any allowed value (e.g. "100" in "100.0")
-            if not any(num in av for av in allowed_values):
-                logger.warning(f"Verification failed: Number '{num}' not found in tool result")
-                return False
+    for num_str in numbers_in_answer:
+        if len(num_str) > 1:
+            try:
+                num_float = float(num_str)
+                # Check if this float exists in allowed_nums (with small epsilon)
+                if not any(abs(num_float - an) < 0.001 for an in allowed_nums):
+                    # One more check: is it a year? (e.g. 2026)
+                    # Years often appear in dates.
+                    logger.warning(f"Verification failed: Number '{num_str}' not found in tool result")
+                    return False
+            except ValueError:
+                continue
 
     return True

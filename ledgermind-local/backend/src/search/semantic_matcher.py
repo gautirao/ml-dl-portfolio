@@ -22,7 +22,7 @@ class SemanticMatcher:
             })
         return matches
 
-    async def extract_entities(self, query: str, score_threshold: float = 0.5) -> Dict[str, List[str]]:
+    async def extract_entities(self, query: str, score_threshold: float = 0.8) -> Dict[str, List[str]]:
         """Extracts candidate merchants and categories from a query using semantic search."""
         matches = await self.find_matches(query, limit=20)
         

@@ -10,8 +10,9 @@ def validate_plan(plan: PlannerPlan) -> Tuple[bool, str]:
     """
     # 1. Reject unknown tools
     allowed_tools = [
-        "spending_summary", "semantic_spending_search", "top_merchants", "compare_periods",
-        "recurring_payments", "transaction_search", "category_summary",
+        "spending_summary", "semantic_spending_search", "semantic_top_merchants", 
+        "top_merchants", "compare_periods", "recurring_payments", 
+        "transaction_search", "category_summary", "knowledge_lookup", 
         "clarification", "out_of_scope"
     ]
     if plan.tool not in allowed_tools:
@@ -34,11 +35,15 @@ def validate_plan(plan: PlannerPlan) -> Tuple[bool, str]:
     # 3. Tool-specific validation
     args = plan.arguments
     
-    if plan.tool in ["spending_summary", "semantic_spending_search", "top_merchants", "category_summary"]:
-        if "date_from" in args and "date_to" in args:
+    if plan.tool in ["spending_summary", "semantic_spending_search", "semantic_top_merchants", "top_merchants", "category_summary"]:
+        date_from = args.get("date_from")
+        date_to = args.get("date_to")
+        if date_from and date_to:
             try:
-                df = date.fromisoformat(args["date_from"])
-                dt = date.fromisoformat(args["date_to"])
+                if not isinstance(date_from, str) or not isinstance(date_to, str):
+                    return False, "Dates must be strings"
+                df = date.fromisoformat(date_from)
+                dt = date.fromisoformat(date_to)
                 if df > dt:
                     return False, "date_from must be before or equal to date_to"
             except ValueError:
@@ -47,6 +52,17 @@ def validate_plan(plan: PlannerPlan) -> Tuple[bool, str]:
     if plan.tool == "spending_summary":
         if "direction" in args and args["direction"] not in ["inflow", "outflow", None]:
             return False, "Invalid direction. Must be 'inflow' or 'outflow'"
+
+    if plan.tool == "semantic_top_merchants":
+        if "rank_by" in args and args["rank_by"] not in ["transaction_count", "total_spend", None]:
+            return False, "Invalid rank_by. Must be 'transaction_count' or 'total_spend'"
+        if "limit" in args:
+            try:
+                limit = int(args["limit"])
+                if limit <= 0 or limit > 100:
+                    return False, "Limit must be between 1 and 100"
+            except ValueError:
+                return False, "Limit must be an integer"
 
     if plan.tool == "top_merchants":
         if "limit" in args:
