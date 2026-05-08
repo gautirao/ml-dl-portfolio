@@ -8,6 +8,7 @@ A privacy-first personal finance assistant that uses a local Planner-Executor AI
 -   **Planner-Executor Pattern:** Built a robust system that separates LLM intent recognition from deterministic SQL execution via DuckDB, preventing "math hallucinations."
 -   **Hybrid Semantic Search:** Engineered a local vector search layer using **ChromaDB** to enable broad conceptual queries (e.g., "takeaway spending") while maintaining deterministic accuracy for the final totals.
 -   **Human-in-the-loop AI:** Developed a category suggestion and approval workflow that combines AI-assisted semantic matching with mandatory human oversight, preventing "categorization drift" and ensuring long-term data integrity.
+-   **Local RAG Knowledge Base:** Integrated a grounded explanation system using local markdown files and vector search, allowing the assistant to explain its own logic and guardrails using retrieved documentation rather than internal training data.
 -   **High-Performance OLAP:** Leveraged DuckDB for near-instant analytical queries across thousands of financial transactions.
 -   **Multi-Layer Guardrails:** Implemented input/output safety checks to enforce a "No Financial Advice" policy and protect against prompt injection.
 -   **Transparent AI:** Developed an "Execution Trace" evidence panel in React to provide users with a clear audit trail for all AI-generated answers.
@@ -23,6 +24,7 @@ A privacy-first personal finance assistant that uses a local Planner-Executor AI
 ## Suggested CV Entry
 **LedgerMind Local | Full-Stack AI Engineer Portfolio Project**
 -   Architected a local-first AI financial assistant using a **Planner-Executor** pattern and **Hybrid Semantic Search** (ChromaDB + DuckDB) to solve LLM arithmetic inaccuracies and enable conceptual queries, achieving 100% numerical precision.
+-   Integrated a **Local RAG Knowledge Base** to provide grounded system explanations and guardrail enforcement using local documentation.
 -   Engineered a high-performance data pipeline using **FastAPI** and **DuckDB** to ingest and analyze heterogeneous bank statements (Monzo, HSBC).
 -   Implemented multi-stage **AI Guardrails** and a React-based **Execution Trace** panel to ensure system safety and provide users with auditable evidence for AI responses.
 -   Deployed local LLM orchestration using **Ollama** and **llama3.2**, ensuring zero data leakage to third-party cloud providers.

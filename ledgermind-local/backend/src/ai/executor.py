@@ -9,6 +9,7 @@ from src.tools.recurring_payments import detect_recurring_payments
 from src.tools.transaction_search import search_transactions
 from src.tools.category_summary import get_category_summary
 from src.tools.semantic_spending import calculate_semantic_spending
+from src.tools.knowledge_lookup import knowledge_lookup
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,10 @@ async def execute_plan(plan: PlannerPlan) -> ToolResult:
             result = get_category_summary(
                 date_from=to_date(args.get("date_from")),
                 date_to=to_date(args.get("date_to"))
+            )
+        elif tool_name == "knowledge_lookup":
+            result = await knowledge_lookup(
+                query=args.get("query") or plan.intent
             )
         else:
             raise ValueError(f"Unsupported tool: {tool_name}")

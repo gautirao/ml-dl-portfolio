@@ -42,6 +42,30 @@ async def semantic_search(
     matches = await matcher.find_matches(q, limit=limit)
     return matches
 
+@router.post("/rebuild-knowledge-index")
+async def rebuild_knowledge_index(
+    vector_store: VectorStore = Depends(get_vector_store),
+    embedding_client: OllamaEmbeddingClient = Depends(get_embedding_client)
+):
+    indexer = Indexer(vector_store, embedding_client)
+    counts = await indexer.rebuild_knowledge_index()
+    return {"status": "success", "indexed_counts": counts}
+
+@router.get("/knowledge")
+async def knowledge_search(
+    q: str,
+    limit: int = 5,
+    vector_store: VectorStore = Depends(get_vector_store),
+    embedding_client: OllamaEmbeddingClient = Depends(get_embedding_client)
+):
+    results = await vector_store.query(
+        query_text=q,
+        embedding_client=embedding_client,
+        limit=limit,
+        where={"type": "knowledge_base"}
+    )
+    return results
+
 @router.post("/semantic-spending", response_model=SemanticSpendingResult)
 async def semantic_spending(
     request: SemanticSpendingRequest

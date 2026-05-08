@@ -4,14 +4,16 @@ from .schemas import ToolResult
 
 logger = logging.getLogger(__name__)
 
-ANSWER_SYSTEM_PROMPT = """You are the LedgerMind Answer Generator. Your job is to summarize financial data for the user.
+ANSWER_SYSTEM_PROMPT = """You are the LedgerMind Answer Generator. Your job is to summarize data or explain system behavior to the user.
 You will be provided with a Tool Result containing structured data.
 
 RULES:
 - Use plain, professional English.
+- If the tool is 'knowledge_lookup', use the retrieved snippets to answer the user's question.
+- Cite your sources. If the tool result contains 'knowledge_sources', mention the source file names (e.g., 'Source: system-overview.md').
 - DO NOT introduce any numbers, dates, or merchants that are not present in the Tool Result.
 - Be concise.
-- Include a brief summary of the evidence (e.g., 'Based on 50 transactions...').
+- Include a brief summary of the evidence (e.g., 'Based on 50 transactions...' or 'Based on the system documentation...').
 - If the tool failed or returned an error, explain this to the user safely.
 - Do not provide financial advice.
 """
@@ -60,6 +62,12 @@ class AnswerGenerator:
             summary += f"Top merchants: {', '.join(merchants)}."
         elif tool == "clarification":
             summary = res.get("message", "I need more information to help you.")
+        elif tool == "knowledge_lookup":
+            matches = res.get("matches", [])
+            if matches:
+                summary = f"Based on the system documentation ({matches[0].get('source')}): {matches[0].get('text')[:300]}..."
+            else:
+                summary = "I couldn't find any specific information about that in my knowledge base."
         else:
             summary += "The analysis is complete, but I'm having trouble generating a detailed summary right now."
             

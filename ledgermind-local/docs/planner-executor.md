@@ -46,6 +46,7 @@ LedgerMind has a fixed registry of tools. The Planner is strictly forbidden from
 -   `compare_periods`: Period-over-period analysis.
 -   `recurring_payments`: Cadence detection.
 -   `transaction_search`: Filtering and raw data retrieval.
+-   `knowledge_lookup`: **RAG tool** introduced in Milestone 9. It performs vector search against the local knowledge base to answer system-related questions (e.g., "How are Monzo files handled?").
 
 ### 4. The Hybrid Semantic Flow
 When a user asks a broad query like "What did I spend on takeaways?", the workflow expands:

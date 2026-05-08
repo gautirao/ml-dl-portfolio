@@ -96,7 +96,14 @@ Introduced in Milestone 7 to handle broad or conceptual queries.
 -   **Hybrid Matcher:** When a user asks a broad question (e.g., "Show my coffee spending"), the system uses vector search to find relevant candidate merchants (Starbucks, Costa) and categories (Coffee).
 -   **Execution:** The candidate list is then passed to the deterministic `spending_summary` tool for final calculation. This ensures semantic flexibility without sacrificing numerical accuracy.
 
-### 4. Human-in-the-Loop Category Layer
+### 4. Local RAG Knowledge Base Layer
+Introduced in Milestone 9 to provide grounded system explanations.
+-   **Knowledge Base (Markdown):** A collection of local documentation files covering system behavior, import assumptions, and privacy.
+-   **Knowledge Indexer:** Chunks and indexes these files into ChromaDB with a `knowledge_base` document type.
+-   **Retrieval:** The `knowledge_lookup` tool performs vector search against this index when the user asks "how-to" or system-related questions.
+-   **Grounded Answers:** Retrieved snippets are used by the Answer Generator to cite specific documentation, ensuring the AI explains the system accurately without hallucinating capabilities.
+
+### 5. Human-in-the-Loop Category Layer
 Bridging the gap between AI suggestions and deterministic rules.
 -   **Suggestion Service:** Scans uncategorized transactions and uses the Semantic Matcher to propose merchants and categories.
 -   **Rule Engine:** Stores user-approved mappings in a `merchant_rules` table. These rules are prioritized over semantic suggestions and applied automatically during ingestion.

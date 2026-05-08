@@ -12,15 +12,16 @@ class PlannerPlan(BaseModel):
         "recurring_payments",
         "transaction_search",
         "category_summary",
+        "knowledge_lookup",
         "clarification",
         "out_of_scope"
     ]
     arguments: Dict[str, Any]
-    confidence: float
-    requires_clarification: bool
+    confidence: float = 1.0
+    requires_clarification: bool = False
     clarification_question: Optional[str] = None
-    risk_level: Literal["low", "medium", "high"]
-    reasoning_summary: str
+    risk_level: Optional[Literal["low", "medium", "high"]] = "low"
+    reasoning_summary: Optional[str] = ""
 
 class ToolResult(BaseModel):
     tool_name: str

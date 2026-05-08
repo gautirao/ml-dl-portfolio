@@ -18,8 +18,9 @@ TOOLS:
 - recurring_payments: Detect potential recurring payments. Args: min_occurrences (optional, default 3).
 - transaction_search: Search for specific transactions. Args: query (optional), date_from (optional), date_to (optional), min_amount (optional), max_amount (optional), category (optional).
 - category_summary: Summary of spending by category. Args: date_from, date_to.
+- knowledge_lookup: Use this ONLY for explanatory or system-related questions (e.g. 'How does this work?', 'What does category X mean?', 'Are my files private?', 'Why is this calculated this way?'). Args: query (REQUIRED string).
 - clarification: Use when the request is ambiguous (e.g. missing dates).
-- out_of_scope: Use when the request cannot be handled by the tools.
+- out_of_scope: Use when the request cannot be handled by the tools, or for financial advice, investment tips, or tax guidance.
 
 RULES:
 - Return ONLY JSON.
@@ -28,14 +29,15 @@ RULES:
 - No raw CSV access.
 - Current date is {current_date}.
 - 2026 is NOT a leap year (February ends on the 28th).
-- ALWAYS provide a 'query' argument for semantic_spending_search.
+- ALWAYS provide a 'query' argument for semantic_spending_search and knowledge_lookup.
+- DO NOT use knowledge_lookup for financial calculations or totals.
+- DO NOT provide financial advice. If asked, use out_of_scope.
 - If dates are missing and cannot be reasonably inferred (e.g. 'last month' is okay), use 'clarification'.
-- Default date range for vague requests is the last 30 days if appropriate, otherwise ask for clarification.
 
 JSON SCHEMA:
 {{
   "intent": "string",
-  "tool": "spending_summary|semantic_spending_search|top_merchants|compare_periods|recurring_payments|transaction_search|category_summary|clarification|out_of_scope",
+  "tool": "spending_summary|semantic_spending_search|top_merchants|compare_periods|recurring_payments|transaction_search|category_summary|knowledge_lookup|clarification|out_of_scope",
   "arguments": {{}},
   "confidence": 0.0,
   "requires_clarification": false,

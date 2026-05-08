@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import List, Dict, Any
 from src.database.connection import db_manager
 from src.search.vector_store import VectorStore
@@ -12,7 +13,9 @@ class Indexer:
         self.embedding_client = embedding_client
 
     async def rebuild_index(self) -> Dict[str, int]:
-        self.vector_store.delete_all()
+        """Rebuilds the transaction-related index (merchants, categories, descriptions)."""
+        # Delete only transaction-related documents
+        self.vector_store.collection.delete(where={"type": {"$in": ["merchant", "category", "transaction_description"]}})
         
         counts = {
             "merchants": 0,
@@ -52,7 +55,7 @@ class Indexer:
             await self.vector_store.add_documents(category_ids, category_docs, category_metadatas, self.embedding_client)
             counts["categories"] = len(category_docs)
             
-        # 3. Index unique transaction descriptions (limited or sampled if too many, but for local let's try all unique)
+        # 3. Index unique transaction descriptions
         descriptions = conn.execute("SELECT DISTINCT description, merchant, category FROM transactions").fetchall()
         desc_docs = []
         desc_metadatas = []
@@ -67,7 +70,6 @@ class Indexer:
             desc_ids.append(f"desc_{i}")
             
         if desc_docs:
-            # Batching might be needed if there are thousands
             batch_size = 100
             for i in range(0, len(desc_docs), batch_size):
                 await self.vector_store.add_documents(
@@ -79,3 +81,53 @@ class Indexer:
             counts["descriptions"] = len(desc_docs)
             
         return counts
+
+    async def rebuild_knowledge_index(self) -> Dict[str, int]:
+        """Rebuilds the knowledge base index from markdown files."""
+        # Try a few locations for docs/kb depending on where this is run from
+        kb_dir = "docs/kb"
+        if not os.path.exists(kb_dir):
+            kb_dir = "../docs/kb"
+            if not os.path.exists(kb_dir):
+                # Another possibility if running from backend root
+                kb_dir = "docs/kb" # already tried, but let's be explicit
+                
+        if not os.path.exists(kb_dir):
+            logger.error(f"KB directory not found: {kb_dir}")
+            return {"documents": 0}
+
+        docs = []
+        metadatas = []
+        ids = []
+        
+        count = 0
+        for filename in os.listdir(kb_dir):
+            if filename.endswith(".md"):
+                file_path = os.path.join(kb_dir, filename)
+                with open(file_path, "r") as f:
+                    content = f.read()
+                    # Split by ## headers to create chunks
+                    sections = content.split("\n## ")
+                    for i, section in enumerate(sections):
+                        if i == 0:
+                            # Title section (usually # Header)
+                            text = section
+                        else:
+                            text = "## " + section
+                        
+                        docs.append(text)
+                        metadatas.append({
+                            "type": "knowledge_base",
+                            "source": filename,
+                            "section": i
+                        })
+                        ids.append(f"kb_{filename}_{i}")
+                        count += 1
+        
+        if docs:
+            # Delete old KB entries
+            self.vector_store.collection.delete(where={"type": "knowledge_base"})
+            
+            await self.vector_store.add_documents(ids, docs, metadatas, self.embedding_client)
+            
+        return {"documents": count}

@@ -40,7 +40,11 @@ LedgerMind solves this by:
     -   Top merchant analysis.
     -   Recurring payment detection (heuristic cadence analysis).
     -   Category-based aggregations.
--   **Conversational Interface:** Ask questions like "How much did I spend at Amazon last month?" or "What are my recurring subscriptions?"
+-   **Local RAG Knowledge Base:**
+    -   Answers system-related questions ("How are totals calculated?", "What does uncategorised mean?") using a local knowledge base.
+    -   Uses local markdown files for explanations, ensuring the AI is grounded in system documentation.
+    -   Maintains a strict boundary: RAG is for explanations; DuckDB is for financial calculations.
+-   **Conversational Interface:** Ask questions like "How much did I spend at Amazon last month?" or "Why does the app say it cannot give financial advice?"
 -   **Human-in-the-Loop Category Approval:**
     -   AI suggests categories and merchant normalization based on semantic matching.
     -   Users approve, reject, or edit suggestions before they become deterministic rules.
@@ -119,8 +123,7 @@ LedgerMind implements a "No Financial Advice" boundary. It will refuse to give i
 ---
 
 ## 🗺️ Roadmap
--   [x] **Local Semantic Search:** Vector search for merchant and category matching.
--   [ ] **RAG (Knowledge Base):** Support for chatting with PDFs (bank terms, policy documents).
+-   [x] **Local RAG Knowledge Base:** Grounded system explanations using local markdown files.
 -   [ ] **Multi-Currency Support:** Automatic conversion and normalization for international transactions.
 -   [ ] **Advanced Forecasting:** Using lightweight time-series models for budget predictions.
 -   [ ] **Direct API Integration:** Support for Plaid or Open Banking APIs.

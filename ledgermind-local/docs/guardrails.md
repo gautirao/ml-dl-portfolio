@@ -22,7 +22,12 @@ After the Answer Generator produces a natural language summary, a final verifica
 -   **Numerical Consistency:** The system checks that the numbers in the LLM's answer match the numbers returned by the deterministic tool. If there is a discrepancy, the system falls back to a deterministic template answer to avoid hallucination.
 -   **Hallucination Check:** Ensures no "new" merchants or dates were introduced that weren't in the raw tool result.
 
-### 4. Human-in-the-Loop Approval
+### 4. RAG Grounding
+When answering explanatory questions:
+-   **Knowledge Retrieval:** The system is restricted to using snippets from the local knowledge base (markdown files).
+-   **Citation Requirement:** The Answer Generator is instructed to cite the source file (e.g., `import-assumptions.md`) to prove the answer is grounded in documentation rather than internal LLM training data.
+
+### 5. Human-in-the-Loop Approval
 A critical guardrail against "Categorization Drift":
 -   **Suggestion Isolation:** AI-suggested categories are never applied automatically to the database. They remain in a "pending" state in a separate table.
 -   **Mandatory Review:** A human must explicitly approve or edit a suggestion before it becomes a deterministic rule.

@@ -81,6 +81,17 @@ const EvidencePanel: React.FC<EvidencePanelProps> = ({
                        The final totals shown were calculated deterministically using DuckDB.</p>
                   </div>
                 )}
+                {plan.tool === "knowledge_lookup" && evidence.knowledge_sources && (
+                  <div className="mb-3 space-y-2">
+                    <p className="font-bold text-indigo-400 mb-1">📚 Knowledge Sources</p>
+                    {evidence.knowledge_sources.map((src: any, idx: number) => (
+                      <div key={idx} className="p-2 bg-indigo-900/30 border border-indigo-700/30 rounded text-indigo-200">
+                        <p className="font-bold">{src.source} (Section {src.section})</p>
+                        <p className="text-gray-400 text-[10px] mt-1 italic">"{src.snippet}"</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <pre>{JSON.stringify(evidence, null, 2)}</pre>
               </div>
             </div>

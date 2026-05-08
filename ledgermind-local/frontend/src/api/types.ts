@@ -8,6 +8,7 @@ export interface PlannerPlan {
     | "recurring_payments"
     | "transaction_search"
     | "category_summary"
+    | "knowledge_lookup"
     | "clarification"
     | "out_of_scope";
   arguments: Record<string, any>;
