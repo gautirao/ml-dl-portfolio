@@ -8,9 +8,14 @@ import json
 class Settings(BaseSettings):
     db_path: str = "data/ledgermind.db"
     schema_path: str = "src/database/schema.sql"
+    vector_store_path: str = "data/vector_store"
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.2"
 
     class Config:
         env_prefix = "LM_"
+        env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
 

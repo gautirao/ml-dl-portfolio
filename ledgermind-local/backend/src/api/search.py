@@ -7,6 +7,7 @@ from src.search.embedding_client import OllamaEmbeddingClient
 from src.search.indexer import Indexer
 from src.search.semantic_matcher import SemanticMatcher
 from src.tools.semantic_spending import calculate_semantic_spending, SemanticSpendingResult
+from src.database.connection import settings
 
 router = APIRouter(prefix="/api/search", tags=["search"])
 
@@ -17,10 +18,13 @@ class SemanticSpendingRequest(BaseModel):
     limit: int = 20
 
 def get_vector_store():
-    return VectorStore()
+    return VectorStore(persist_directory=settings.vector_store_path)
 
 def get_embedding_client():
-    return OllamaEmbeddingClient()
+    return OllamaEmbeddingClient(
+        base_url=settings.ollama_base_url,
+        model=settings.ollama_model
+    )
 
 @router.post("/rebuild-index")
 async def rebuild_index(

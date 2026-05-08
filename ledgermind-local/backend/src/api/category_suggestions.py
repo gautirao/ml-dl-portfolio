@@ -6,6 +6,7 @@ from src.search.vector_store import VectorStore
 from src.search.embedding_client import OllamaEmbeddingClient
 from src.search.semantic_matcher import SemanticMatcher
 from src.search.indexer import Indexer
+from src.database.connection import settings
 
 router = APIRouter(prefix="/api/categories", tags=["categories"])
 
@@ -21,8 +22,11 @@ class ApproveRequest(BaseModel):
 def get_suggestion_service():
     # We don't use Depends in the factory function itself to avoid complexity,
     # but we can instantiate dependencies here or pass them from the endpoint.
-    vector_store = VectorStore()
-    embedding_client = OllamaEmbeddingClient()
+    vector_store = VectorStore(persist_directory=settings.vector_store_path)
+    embedding_client = OllamaEmbeddingClient(
+        base_url=settings.ollama_base_url,
+        model=settings.ollama_model
+    )
     matcher = SemanticMatcher(vector_store, embedding_client)
     indexer = Indexer(vector_store, embedding_client)
     return SuggestionService(semantic_matcher=matcher, indexer=indexer)

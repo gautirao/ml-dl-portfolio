@@ -6,15 +6,65 @@ LedgerMind Local is a recruiter-ready portfolio project demonstrating a **Planne
 
 ---
 
-## 🛑 The Problem
-Standard LLMs are notoriously bad at arithmetic and often "hallucinate" financial figures when reading large datasets. Additionally, uploading sensitive bank statements to cloud-based AI providers (ChatGPT, Claude) poses significant privacy risks for personal financial data.
+## 🚀 Quickstart Demo
 
-## ✅ The Solution: LedgerMind Local
-LedgerMind solves this by:
-1.  **Local Execution:** Using **Ollama** and **llama3.2** to process data entirely on your local machine.
-2.  **Planner-Executor Pattern:** Separating the "reasoning" (planning which tool to use) from the "calculation" (running SQL on DuckDB).
-3.  **Deterministic Tools:** Using high-performance SQL via **DuckDB** for all aggregations and searches.
-4.  **Evidence-Based AI:** Every answer includes an **Execution Trace** showing exactly which tool was used and what data was retrieved.
+Follow these steps to see LedgerMind Local in action with safe, synthetic data.
+
+### 1. Prerequisites
+-   Python 3.10+ (recommend [uv](https://github.com/astral-sh/uv) for fast dependency management)
+-   Node.js 18+
+-   [Ollama](https://ollama.com/) (installed and running)
+
+### 2. Setup Ollama
+```bash
+ollama pull llama3.2
+```
+
+### 3. Installation
+```bash
+# Clone the repository
+git clone <this-repo-url>
+cd ledgermind-local
+
+# Install Backend
+cd backend
+pip install uv # if not installed
+uv sync
+
+# Install Frontend
+cd ../frontend
+npm install
+```
+
+### 4. Running the App
+Use the provided `Makefile` for convenience (or see commands in `Makefile` if `make` is not available):
+
+```bash
+# Terminal 1: Start Backend
+make backend
+
+# Terminal 2: Start Frontend
+make frontend
+```
+Visit `http://localhost:5173`.
+
+### 5. Step-by-Step Demo
+1.  **Import Demo Data:** Go to the "Import" page. Upload `sample-data/monzo_demo.csv`.
+2.  **View Analytics:** Navigate to "Analytics" to see the spending breakdown.
+3.  **Chat with AI:** Ask "How much did I spend at Starbucks?" or "What was my total income?"
+4.  **See the Evidence:** Click the "Planner & Evidence" icon in the chat to see the SQL and Execution Trace.
+5.  **Rebuild Index:** Go to "Search" and click "Rebuild Index" to enable semantic search on the demo data.
+6.  **Try Semantic Search:** Ask "How much did I spend on coffee?" (This uses semantic matching for "Starbucks").
+
+---
+
+## 🏗️ Development Commands
+A `Makefile` is provided in the root directory:
+- `make backend`: Run backend dev server
+- `make frontend`: Run frontend dev server
+- `make test`: Run backend tests
+- `make build`: Build frontend and check types
+- `make reset-local`: Wipes local database and vector store (use with caution)
 
 ---
 
@@ -58,59 +108,19 @@ LedgerMind solves this by:
 | Tier | Technology |
 | :--- | :--- |
 | **Frontend** | React, TypeScript, Vite, Tailwind CSS, Lucide |
-| **Backend** | Python, FastAPI, Pydantic |
-| **Database** | DuckDB (SQL-based OLAP) |
-| **LLM** | Ollama, llama3.2 (3B) |
-| **Testing** | Pytest, Axios-mock-adapter |
+| **Backend** | Python, FastAPI, Pydantic, DuckDB |
+| **LLM** | Ollama (llama3.2) |
+| **Search** | ChromaDB (Vector Store) |
+| **Testing** | Pytest |
 
 ---
 
-## 🚀 Getting Started
-
-### 1. Prerequisites
--   Python 3.10+
--   Node.js 18+
--   [Ollama](https://ollama.com/) (installed and running)
-
-### 2. Setup Ollama
-```bash
-ollama pull llama3.2
-```
-
-### 3. Backend Setup
-```bash
-cd backend
-python -m venv .venv
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-pip install uv
-uv sync
-PYTHONPATH=. uv run pytest  # Verify setup
-uv run python src/main.py   # Start server
-```
-
-### 4. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Visit `http://localhost:5173`.
-
----
-
-## 📸 Screenshots (Placeholders)
--   **Import Workflow:** `docs/images/upload-page.png`
--   **Financial Dashboard:** `docs/images/analytics-page.png`
--   **AI Evidence Panel:** `docs/images/chat-evidence-panel.png`
-
----
-
-## 🗨️ Example Questions
--   "What was my total spending in January 2026?"
--   "Show me my top 5 merchants for outflows."
--   "How much have I spent on groceries lately?"
--   "What are my recurring payments?"
--   "Summarize my spending across all banks."
+## 📸 Screenshots (Checklist)
+See `docs/screenshots/README.md` for the full portfolio screenshot checklist.
+-   **Import Workflow**
+-   **Financial Dashboard**
+-   **AI Evidence Panel**
+-   **Category Review Flow**
 
 ---
 

@@ -11,14 +11,15 @@ from src.ai import (
     ChatResponse, Guardrails, AuditEvent
 )
 from src.ai.executor import execute_plan
+from src.database.connection import settings
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
 # In a real app, these would be injected via dependencies
-ollama_client = OllamaClient()
-planner = Planner(ollama_client)
-answer_gen = AnswerGenerator(ollama_client)
+ollama_client = OllamaClient(base_url=settings.ollama_base_url)
+planner = Planner(ollama_client, model=settings.ollama_model)
+answer_gen = AnswerGenerator(ollama_client, model=settings.ollama_model)
 
 class ChatRequest(BaseModel):
     message: str

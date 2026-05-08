@@ -3,9 +3,11 @@ from chromadb.config import Settings
 import os
 from typing import List, Dict, Any, Optional
 from src.search.embedding_client import EmbeddingClient
+from src.database.connection import settings
 
 class VectorStore:
-    def __init__(self, persist_directory: str = "data/vector_store"):
+    def __init__(self, persist_directory: str = None):
+        persist_directory = persist_directory or settings.vector_store_path
         os.makedirs(persist_directory, exist_ok=True)
         self.client = chromadb.PersistentClient(path=persist_directory)
         self.collection = self.client.get_or_create_collection(
