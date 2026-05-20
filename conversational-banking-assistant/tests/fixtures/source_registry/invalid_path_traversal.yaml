@@ -1,0 +1,17 @@
+- source_id: test-path-traversal
+  bank: testbank
+  title: Traversal Attempt
+  source_type: public_pdf
+  product_area: current_accounts
+  document_type: terms_conditions
+  url: https://example.com/test.pdf
+  citation_label: "[Test-2026]"
+  retrieved_at: 2026-01-01
+  local_path: ../../../etc/passwd
+  content_hash: somehash
+  content_hash_algorithm: sha256
+  freshness_threshold_days: 180
+  allowed_for_demo: true
+  risk_level: medium
+  stale_policy: warn_only
+  licence_notes: "Test license"

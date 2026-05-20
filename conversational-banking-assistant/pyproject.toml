@@ -1,0 +1,13 @@
+[project]
+name = "conversational-banking-assistant"
+version = "0.1.0"
+description = "Conversational Banking Assistant"
+dependencies = [
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0.0",
+]

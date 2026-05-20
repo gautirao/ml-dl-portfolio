@@ -1,0 +1,38 @@
+- source_id: test-valid-doc
+  bank: testbank
+  title: Test Valid Document
+  source_type: public_pdf
+  product_area: current_accounts
+  document_type: terms_conditions
+  url: https://example.com/test.pdf
+  citation_label: "[Test-2026]"
+  retrieved_at: 2026-01-01
+  local_path: tests/fixtures/documents/sample-policy.txt
+  content_hash: d9a6a0e109c80d36dc3232c4216cb90f30c4db7fba9d0673a4cf8548690bf247
+  content_hash_algorithm: sha256
+  freshness_threshold_days: 180
+  allowed_for_demo: true
+  risk_level: medium
+  stale_policy: warn_only
+  licence_notes: "Test license"
+  extraction_method: pypdf
+
+- source_id: test-high-risk-valid
+  bank: testbank
+  title: High Risk Document
+  source_type: public_web
+  product_area: overdrafts
+  document_type: overdraft_guidance
+  url: https://example.com/overdraft
+  citation_label: "[Test-OD-26]"
+  retrieved_at: 2026-05-15
+  local_path: tests/fixtures/documents/sample-policy.txt
+  content_hash: d9a6a0e109c80d36dc3232c4216cb90f30c4db7fba9d0673a4cf8548690bf247
+  content_hash_algorithm: sha256
+  freshness_threshold_days: 90
+  allowed_for_demo: true
+  risk_level: high
+  financial_advice_boundary: "Do not provide advice."
+  stale_policy: block_answer
+  licence_notes: "Test license"
+  extraction_method: beautifulsoup

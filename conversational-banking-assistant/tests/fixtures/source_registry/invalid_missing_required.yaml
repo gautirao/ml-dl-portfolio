@@ -1,0 +1,4 @@
+- source_id: test-missing-fields
+  bank: testbank
+  # title missing
+  # source_type missing
