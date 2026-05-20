@@ -1,7 +1,7 @@
 from pathlib import Path
 from enum import Enum
-from typing import Optional
-from datetime import date
+from typing import Optional, List
+from datetime import date, datetime
 from pydantic import BaseModel, Field, model_validator, field_validator
 import re
 
@@ -112,3 +112,20 @@ class Source(BaseModel):
             if self.url == "PLACEHOLDER_URL":
                 raise ValueError("url cannot be PLACEHOLDER_URL if allowed_for_demo is True")
         return self
+
+class ExtractedPage(BaseModel):
+    page_number: int
+    text: str
+
+class ExtractedDocument(BaseModel):
+    source_id: str
+    title: str
+    document_type: DocumentType
+    product_area: ProductArea
+    local_path: str
+    extracted_at: datetime
+    pages: List[ExtractedPage]
+    
+    @property
+    def full_text(self) -> str:
+        return "\n\n".join([page.text for page in self.pages])

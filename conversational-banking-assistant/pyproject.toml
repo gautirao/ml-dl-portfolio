@@ -5,6 +5,8 @@ description = "Conversational Banking Assistant"
 dependencies = [
     "pydantic>=2.0.0",
     "pyyaml>=6.0",
+    "pypdf>=4.0.0",
+    "beautifulsoup4>=4.12.0",
 ]
 
 [dependency-groups]

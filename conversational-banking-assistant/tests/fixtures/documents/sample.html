@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sample Banking Document</title>
+    <style>
+        body { font-family: sans-serif; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h1>Current Account Terms</h1>
+    <p>This is a synthetic document for testing extraction.</p>
+    <div class="content">
+        <p>Section 1: Fees</p>
+        <ul>
+            <li>Monthly fee: £0</li>
+            <li>Overdraft rate: 39.9%</li>
+        </ul>
+    </div>
+    <script>
+        console.log("This should be ignored");
+    </script>
+    <style>
+        .more-styles { color: red; }
+    </style>
+    <noscript>
+        <p>This noscript content should also be ignored if we only want body text, but usually it's fine to keep if it's visible. However, instruction says remove noscript.</p>
+    </noscript>
+    <footer>
+        <p>© 2026 Synthetic Bank</p>
+    </footer>
+</body>
+</html>
