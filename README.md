@@ -35,7 +35,7 @@ A privacy-first, local-AI financial assistant that uses a **Planner-Executor arc
 
 ### 6. [Conversational Banking Assistant](./conversational-banking-assistant/)
 **The "Safety-First" Policy Assistant**
-A planned local AI chatbot for answering banking-policy questions from public documents with citations, guardrails and audit logging.
+A planned local AI chatbot designed to safely answer banking-policy questions from public documents, featuring explicit citations, strict guardrails, and full audit logging.
 - **Key Concepts:** Conversational AI, Retrieval-Augmented Generation (RAG), Local LLMs (Ollama), Banking Policy, Guardrails, and Audit Logging.
 - **Status:** Planned / In design
 - **Planned stack:** Python, Ollama (Qwen 3.5 / Llama 3.2), FastAPI, DuckDB, Qdrant/Chroma, and pytest-bdd.

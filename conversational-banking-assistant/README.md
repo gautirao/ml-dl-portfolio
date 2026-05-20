@@ -4,7 +4,7 @@
 **Architecture Theme:** Safety-First Local RAG for Regulated Domains
 
 ## 📖 Summary
-The **Conversational Banking Assistant** is a prototype local AI chatbot designed to answer questions from publicly available banking policy, fee, and overdraft documents. It demonstrates how conversational AI can be made safer and more reliable in a regulated domain by using document retrieval, citations, deterministic tools, confidence checks, refusal rules, and comprehensive audit logging.
+The **Conversational Banking Assistant** is a planned prototype local AI chatbot designed to answer questions from publicly available banking policy, fee, and overdraft documents. It demonstrates how conversational AI can be made safer and more reliable in a regulated domain by using document retrieval, citations, deterministic tools, confidence checks, refusal rules, and comprehensive audit logging.
 
 ## 🎯 Problem Statement
 Generic LLMs often hallucinate financial details or provide unsupported advice when queried about specific banking policies. In a regulated environment, "creative" answers are a liability. This project addresses these risks by grounding every response in verified documents and enforcing strict guardrails.
@@ -24,11 +24,11 @@ Generic LLMs often hallucinate financial details or provide unsupported advice w
 - **Frontend:** Streamlit (for rapid prototyping)
 - **Database/Storage:** DuckDB (Audit logs & Metadata), Qdrant or Chroma (Vector Store)
 - **Embeddings:** `sentence-transformers`
-- **Orchestration:** Custom provider-swappable interface (Gemini API for dev aid)
+- **Orchestration:** Custom provider-swappable interface built for Ollama runtime, with Gemini API usable for development/debugging.
 - **Testing:** `pytest` and `pytest-bdd` (Behavior-Driven Development)
 
 ## 🚀 Key Features
-- **Section-Aware Parsing:** Intelligence ingestion of PDF/HTML banking documents.
+- **Intelligent ingestion of PDF/HTML banking documents.**
 - **Hybrid Retrieval:** Combining vector search with keyword search and metadata filtering.
 - **Deterministic Calculation Tools:** Handling overdraft cost examples via code, not LLM arithmetic.
 - **Citation-Backed Answers:** Explicit links to source document sections.
