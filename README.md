@@ -33,6 +33,13 @@ A privacy-first, local-AI financial assistant that uses a **Planner-Executor arc
 - **Key Concepts:** Planner-Executor Pattern, Local LLM (Ollama/llama3.2), Deterministic SQL Execution (DuckDB), Local RAG for system explanations, Human-in-the-Loop Categorization, and Evidence-Based AI (Execution Trace).
 - **Use Case:** Securely analyzing personal spending patterns while ensuring 100% numerical accuracy through deterministic calculations instead of LLM arithmetic.
 
+### 6. [Conversational Banking Assistant](./conversational-banking-assistant/)
+**The "Safety-First" Policy Assistant**
+A planned local AI chatbot for answering banking-policy questions from public documents with citations, guardrails and audit logging.
+- **Key Concepts:** Conversational AI, Retrieval-Augmented Generation (RAG), Local LLMs (Ollama), Banking Policy, Guardrails, and Audit Logging.
+- **Status:** Planned / In design
+- **Planned stack:** Python, Ollama (Qwen 3.5 / Llama 3.2), FastAPI, DuckDB, Qdrant/Chroma, and pytest-bdd.
+
 ---
 
 ## 🚀 How to Get Started
