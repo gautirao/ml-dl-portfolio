@@ -119,6 +119,7 @@ class ExtractedPage(BaseModel):
 
 class ExtractedDocument(BaseModel):
     source_id: str
+    citation_label: Optional[str] = None
     title: str
     document_type: DocumentType
     product_area: ProductArea
@@ -129,3 +130,19 @@ class ExtractedDocument(BaseModel):
     @property
     def full_text(self) -> str:
         return "\n\n".join([page.text for page in self.pages])
+
+class Chunk(BaseModel):
+    chunk_id: str
+    source_id: str
+    citation_label: str
+    title: str
+    document_type: DocumentType
+    product_area: ProductArea
+    section_heading: Optional[str] = None
+    chunk_index: int
+    text: str
+    character_start: int
+    character_end: int
+    page_number_start: Optional[int] = None
+    page_number_end: Optional[int] = None
+    chunk_hash: str
