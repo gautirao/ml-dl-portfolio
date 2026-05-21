@@ -6,7 +6,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.http import models as rest_models
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
-from .models import Chunk, SearchResult
+from cba.domain.models import Chunk, SearchResult
 from .embeddings import EmbeddingModel
 
 @runtime_checkable

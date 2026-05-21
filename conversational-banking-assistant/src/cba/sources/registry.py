@@ -3,13 +3,9 @@ import hashlib
 from pathlib import Path
 from typing import List, Optional
 from datetime import date
-from enum import Enum
-from .models import Source
 
-class IntegrityStatus(str, Enum):
-    OK = "OK"
-    MISSING_FILE = "MISSING_FILE"
-    HASH_MISMATCH = "HASH_MISMATCH"
+from cba.domain.models import Source
+from cba.domain.enums import IntegrityStatus
 
 class SourceRegistry:
     @staticmethod

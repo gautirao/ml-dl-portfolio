@@ -1,8 +1,8 @@
 import pytest
 from pathlib import Path
-from cba.embeddings import FakeEmbeddingModel
-from cba.vector_index import QdrantVectorIndex
-from cba.models import Chunk, DocumentType, ProductArea
+from cba.retrieval.embeddings import FakeEmbeddingModel
+from cba.retrieval.vector_index import QdrantVectorIndex
+from cba.domain.models import Chunk, DocumentType, ProductArea
 
 @pytest.fixture
 def fake_embedding_model():

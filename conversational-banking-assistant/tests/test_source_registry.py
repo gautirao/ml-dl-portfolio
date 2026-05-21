@@ -1,7 +1,8 @@
 import pytest
 from pathlib import Path
 from datetime import date, timedelta
-from cba.source_registry import SourceRegistry, IntegrityStatus
+from cba.sources.registry import SourceRegistry
+from cba.domain.enums import IntegrityStatus
 from pydantic import ValidationError
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -28,7 +29,7 @@ def test_path_traversal_validation():
 
 def test_kebab_case_validation():
     # Test with invalid ID directly through model if possible, or a temp yaml
-    from cba.models import Source
+    from cba.domain.models import Source
     with pytest.raises(ValidationError) as excinfo:
         Source(
             source_id="Invalid_ID",
@@ -50,7 +51,7 @@ def test_kebab_case_validation():
     assert "kebab-case" in str(excinfo.value)
 
 def test_risk_level_validation_high_risk_missing_boundary():
-    from cba.models import Source
+    from cba.domain.models import Source
     with pytest.raises(ValidationError) as excinfo:
         Source(
             source_id="test-id",
@@ -73,7 +74,7 @@ def test_risk_level_validation_high_risk_missing_boundary():
     assert "financial_advice_boundary" in str(excinfo.value)
 
 def test_risk_level_validation_low_risk_for_fee_info():
-    from cba.models import Source
+    from cba.domain.models import Source
     with pytest.raises(ValidationError) as excinfo:
         Source(
             source_id="test-id",
@@ -107,7 +108,7 @@ def test_integrity_check_ok():
     assert status == IntegrityStatus.OK
 
 def test_integrity_check_missing():
-    from cba.models import Source
+    from cba.domain.models import Source
     source = Source(
         source_id="test-missing",
         bank="test",
@@ -138,7 +139,7 @@ def test_integrity_check_hash_mismatch():
     assert status == IntegrityStatus.HASH_MISMATCH
 
 def test_staleness_flag():
-    from cba.models import Source
+    from cba.domain.models import Source
     
     # Not stale
     source_fresh = Source(

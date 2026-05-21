@@ -6,7 +6,8 @@ from typing import List
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
-from .models import Source, SourceType, ExtractedDocument, ExtractedPage
+from cba.domain.models import Source, ExtractedDocument, ExtractedPage
+from cba.domain.enums import SourceType
 
 class DocumentExtractor:
     def __init__(self, project_root: Path = Path(".")):

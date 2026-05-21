@@ -1,5 +1,5 @@
 import pytest
-from cba.embeddings import FakeEmbeddingModel
+from cba.retrieval.embeddings import FakeEmbeddingModel
 
 def test_fake_embedding_model_dimension():
     dim = 128

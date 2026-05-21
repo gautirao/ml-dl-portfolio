@@ -1,7 +1,7 @@
 import hashlib
 import re
 from typing import List, Optional
-from .models import ExtractedDocument, Chunk
+from cba.domain.models import ExtractedDocument, Chunk
 
 class TextCleaner:
     def __init__(self):
