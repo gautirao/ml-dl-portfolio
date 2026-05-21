@@ -146,3 +146,7 @@ class Chunk(BaseModel):
     page_number_start: Optional[int] = None
     page_number_end: Optional[int] = None
     chunk_hash: str
+
+class SearchResult(BaseModel):
+    chunk: Chunk
+    score: float # Cosine similarity, higher is better

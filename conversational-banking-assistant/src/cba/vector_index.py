@@ -1,0 +1,121 @@
+import uuid
+from pathlib import Path
+from typing import List, Optional, Protocol, runtime_checkable
+
+from qdrant_client import QdrantClient
+from qdrant_client.http import models as rest_models
+from qdrant_client.models import Distance, VectorParams, PointStruct
+
+from .models import Chunk, SearchResult
+from .embeddings import EmbeddingModel
+
+@runtime_checkable
+class VectorIndex(Protocol):
+    def add_chunks(self, chunks: List[Chunk]) -> None:
+        """
+        Add or update chunks in the vector index.
+        """
+        ...
+
+    def search(self, query: str, top_k: int = 5) -> List[SearchResult]:
+        """
+        Perform a vector similarity search.
+        """
+        ...
+
+class QdrantVectorIndex:
+    """
+    Local vector index implementation using Qdrant.
+    """
+    COLLECTION_NAME = "chunks"
+
+    def __init__(
+        self, 
+        embedding_model: EmbeddingModel, 
+        location: Optional[str] = None, 
+        path: Optional[str] = None
+    ):
+        """
+        Initialize Qdrant index.
+        :param embedding_model: The model used to generate embeddings.
+        :param location: Qdrant location (e.g., ":memory:").
+        :param path: Local disk path for persistence.
+        """
+        self.embedding_model = embedding_model
+        
+        if path:
+            # Enforce path safety - must be under data/vector_store/
+            abs_path = Path(path).resolve()
+            # We assume project root is current directory if not specified otherwise
+            # but for safety let's just check the string if it's relative
+            if not ("data/vector_store" in str(path)):
+                 raise ValueError("Persistent vector store must be under data/vector_store/")
+            
+            self.client = QdrantClient(path=path)
+        else:
+            self.client = QdrantClient(location=location or ":memory:")
+            
+        self._ensure_collection()
+
+    def _ensure_collection(self):
+        # We need a dummy embedding to know the dimension if it's not explicitly known
+        # Sentence-transformers usually have 384 for all-MiniLM-L6-v2
+        # Let's get it from the model
+        dummy_embedding = self.embedding_model.embed_query("dummy")
+        dimension = len(dummy_embedding)
+
+        collections = self.client.get_collections().collections
+        exists = any(c.name == self.COLLECTION_NAME for c in collections)
+        
+        if not exists:
+            self.client.create_collection(
+                collection_name=self.COLLECTION_NAME,
+                vectors_config=VectorParams(size=dimension, distance=Distance.COSINE),
+            )
+
+    def _get_point_id(self, chunk_id: str) -> str:
+        """
+        Deterministic UUID5 from chunk_id.
+        """
+        return str(uuid.uuid5(uuid.NAMESPACE_URL, chunk_id))
+
+    def add_chunks(self, chunks: List[Chunk]) -> None:
+        if not chunks:
+            return
+
+        texts = [chunk.text for chunk in chunks]
+        embeddings = self.embedding_model.embed_documents(texts)
+        
+        points = []
+        for chunk, vector in zip(chunks, embeddings):
+            point_id = self._get_point_id(chunk.chunk_id)
+            points.append(PointStruct(
+                id=point_id,
+                vector=vector,
+                payload=chunk.model_dump()
+            ))
+            
+        self.client.upsert(
+            collection_name=self.COLLECTION_NAME,
+            points=points
+        )
+
+    def search(self, query: str, top_k: int = 5) -> List[SearchResult]:
+        query_vector = self.embedding_model.embed_query(query)
+        
+        search_results = self.client.query_points(
+            collection_name=self.COLLECTION_NAME,
+            query=query_vector,
+            limit=top_k
+        ).points
+        
+        results = []
+        for res in search_results:
+            # Reconstruct Chunk from payload
+            chunk = Chunk(**res.payload)
+            results.append(SearchResult(
+                chunk=chunk,
+                score=res.score # Cosine similarity, higher is better
+            ))
+            
+        return results
