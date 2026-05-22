@@ -35,6 +35,36 @@ Generic LLMs often hallucinate financial details or provide unsupported advice w
 - **Guardrail Engine:** Intercepting sensitive queries or low-confidence retrievals.
 - **Evaluation Framework:** Audit logs and a small golden dataset for regression testing.
 
+## 💻 Developer Setup
+
+This project uses `uv` for fast dependency management and environment isolation.
+
+### Prerequisites
+- [uv](https://github.com/astral-sh/uv) installed.
+- Python 3.12 (specifically 3.12.x is recommended; 3.14+ is not recommended yet as some ML dependencies may lag).
+
+### Initial Setup
+```bash
+cd conversational-banking-assistant
+uv sync
+```
+
+### Running Tests
+```bash
+cd conversational-banking-assistant
+PYTHONPATH=src uv run pytest
+```
+
+### IDE Configuration (IntelliJ / PyCharm)
+1. **Python Interpreter:** Set the project interpreter to `.venv/bin/python` (created by `uv sync`).
+2. **Sources Root:** Right-click the `src` directory and select **Mark Directory as > Sources Root**.
+3. **Pytest Integration:**
+   - Go to **Settings > Tools > Python Integrated Tools**.
+   - Set **Default test runner** to **pytest**.
+4. **Test Run Configuration:**
+   - Set the **Working directory** to the project root (`conversational-banking-assistant`).
+   - Add an environment variable: `PYTHONPATH=src`.
+
 ## 🧪 Development Approach
 This project follows a **TDD/BDD (Test/Behavior Driven Development)** approach:
 1. Define user stories in Gherkin syntax (`.feature` files).
