@@ -4,6 +4,8 @@ from datetime import date, datetime
 from pydantic import BaseModel, Field, model_validator, field_validator
 import re
 
+from cba.common.paths import is_safe_relative_path, validate_path_prefix
+
 from .enums import (
     SourceType, 
     ProductArea, 
@@ -44,16 +46,14 @@ class Source(BaseModel):
     @field_validator("local_path")
     @classmethod
     def validate_local_path_safety(cls, v: str) -> str:
-        path = Path(v)
-        if path.is_absolute():
-            raise ValueError("absolute paths are not permitted in local_path")
-        
-        if ".." in path.parts:
+        if not is_safe_relative_path(v):
+            if Path(v).is_absolute():
+                 raise ValueError("absolute paths are not permitted in local_path")
             raise ValueError("Path traversal (..) is not permitted in local_path")
 
         # In a real scenario, we'd enforce data/raw/ prefix here.
         # However, to support tests using fixtures, we allow 'tests/fixtures/' as well.
-        if not (v.startswith("data/raw/") or v.startswith("tests/fixtures/")):
+        if not validate_path_prefix(v, ["data/raw/", "tests/fixtures/"]):
             raise ValueError("local_path must be under data/raw/ (or tests/fixtures/ for testing)")
             
         return v

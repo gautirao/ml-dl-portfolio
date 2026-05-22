@@ -1,11 +1,12 @@
 import yaml
-import hashlib
 from pathlib import Path
 from typing import List, Optional
 from datetime import date
 
 from cba.domain.models import Source
 from cba.domain.enums import IntegrityStatus
+
+from cba.common.hashing import calculate_file_sha256
 
 class SourceRegistry:
     @staticmethod
@@ -19,14 +20,6 @@ class SourceRegistry:
         return [Source(**item) for item in data]
 
     @staticmethod
-    def calculate_sha256(file_path: Path) -> str:
-        sha256_hash = hashlib.sha256()
-        with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b""):
-                sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
-
-    @staticmethod
     def verify_integrity(source: Source, project_root: Path) -> IntegrityStatus:
         # local_path is relative to project root (or data/raw/ as per design)
         # However, for tests, we allow it to be relative to the provided project_root
@@ -35,7 +28,7 @@ class SourceRegistry:
         if not full_path.exists():
             return IntegrityStatus.MISSING_FILE
         
-        actual_hash = SourceRegistry.calculate_sha256(full_path)
+        actual_hash = calculate_file_sha256(full_path)
         if actual_hash != source.content_hash:
             return IntegrityStatus.HASH_MISMATCH
             

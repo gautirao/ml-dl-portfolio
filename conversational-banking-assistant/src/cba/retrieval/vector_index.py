@@ -7,6 +7,7 @@ from qdrant_client.http import models as rest_models
 from qdrant_client.models import Distance, VectorParams, PointStruct
 
 from cba.domain.models import Chunk, SearchResult
+from cba.common.paths import validate_path_prefix
 from .embeddings import EmbeddingModel
 
 @runtime_checkable
@@ -45,10 +46,7 @@ class QdrantVectorIndex:
         
         if path:
             # Enforce path safety - must be under data/vector_store/
-            abs_path = Path(path).resolve()
-            # We assume project root is current directory if not specified otherwise
-            # but for safety let's just check the string if it's relative
-            if not ("data/vector_store" in str(path)):
+            if not validate_path_prefix(str(path), ["data/vector_store"]):
                  raise ValueError("Persistent vector store must be under data/vector_store/")
             
             self.client = QdrantClient(path=path)

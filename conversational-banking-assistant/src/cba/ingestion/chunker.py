@@ -1,7 +1,7 @@
-import hashlib
 import re
 from typing import List, Optional
 from cba.domain.models import ExtractedDocument, Chunk
+from cba.common.hashing import calculate_text_sha256
 
 class TextCleaner:
     def __init__(self):
@@ -181,7 +181,7 @@ class SectionAwareChunker:
                             page_end = p_num
                             break
 
-                    chunk_hash = hashlib.sha256(chunk_text.encode("utf-8")).hexdigest()
+                    chunk_hash = calculate_text_sha256(chunk_text)
                     chunk_id = f"{doc.source_id}::chunk::{chunk_index:04d}"
                     
                     chunks.append(Chunk(
