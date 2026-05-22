@@ -2,16 +2,16 @@
 import pytest
 
 from cba.domain.models import Chunk, DocumentType, ProductArea
-from cba.retrieval.embeddings import FakeEmbeddingModel
+from cba.retrieval.embeddings import EmbeddingModel, FakeEmbeddingModel
 from cba.retrieval.vector_index import QdrantVectorIndex
 
 
 @pytest.fixture
-def fake_embedding_model():
+def fake_embedding_model() -> EmbeddingModel:
     return FakeEmbeddingModel(dimension=384)
 
 @pytest.fixture
-def sample_chunk():
+def sample_chunk() -> Chunk:
     return Chunk(
         chunk_id="test-source::chunk::0001",
         source_id="test-source",
@@ -28,13 +28,13 @@ def sample_chunk():
         chunk_hash="fakehash123"
     )
 
-def test_vector_store_path_safety(fake_embedding_model):
+def test_vector_store_path_safety(fake_embedding_model: EmbeddingModel) -> None:
     # Should fail if path is not under data/vector_store/
     msg = "Persistent vector store must be under data/vector_store/"
     with pytest.raises(ValueError, match=msg):
         QdrantVectorIndex(embedding_model=fake_embedding_model, path="/tmp/unsafe_qdrant")
 
-def test_add_and_search_chunks(fake_embedding_model, sample_chunk):
+def test_add_and_search_chunks(fake_embedding_model: EmbeddingModel, sample_chunk: Chunk) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     
     index.add_chunks([sample_chunk])
@@ -47,7 +47,7 @@ def test_add_and_search_chunks(fake_embedding_model, sample_chunk):
     assert results[0].chunk.text == sample_chunk.text
     assert results[0].score > 0.9 # Should be high similarity for exact match
 
-def test_metadata_preservation(fake_embedding_model, sample_chunk):
+def test_metadata_preservation(fake_embedding_model: EmbeddingModel, sample_chunk: Chunk) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     index.add_chunks([sample_chunk])
     
@@ -62,7 +62,10 @@ def test_metadata_preservation(fake_embedding_model, sample_chunk):
     assert retrieved.chunk_hash == sample_chunk.chunk_hash
     assert retrieved.page_number_start == sample_chunk.page_number_start
 
-def test_duplicate_chunk_id_handling(fake_embedding_model, sample_chunk):
+def test_duplicate_chunk_id_handling(
+    fake_embedding_model: EmbeddingModel, 
+    sample_chunk: Chunk
+) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     
     # Add same chunk twice
@@ -73,7 +76,7 @@ def test_duplicate_chunk_id_handling(fake_embedding_model, sample_chunk):
     count = index.client.count(collection_name=index.COLLECTION_NAME).count
     assert count == 1
 
-def test_update_chunk_payload(fake_embedding_model, sample_chunk):
+def test_update_chunk_payload(fake_embedding_model: EmbeddingModel, sample_chunk: Chunk) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     index.add_chunks([sample_chunk])
     
@@ -87,12 +90,12 @@ def test_update_chunk_payload(fake_embedding_model, sample_chunk):
     count = index.client.count(collection_name=index.COLLECTION_NAME).count
     assert count == 1
 
-def test_empty_index_search(fake_embedding_model):
+def test_empty_index_search(fake_embedding_model: EmbeddingModel) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     results = index.search("query", top_k=5)
     assert results == []
 
-def test_search_score_semantics(fake_embedding_model, sample_chunk):
+def test_search_score_semantics(fake_embedding_model: EmbeddingModel, sample_chunk: Chunk) -> None:
     index = QdrantVectorIndex(embedding_model=fake_embedding_model, location=":memory:")
     index.add_chunks([sample_chunk])
     

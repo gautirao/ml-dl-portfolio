@@ -8,11 +8,11 @@ from cba.ingestion.extractor import DocumentExtractor
 
 
 @pytest.fixture
-def extractor():
+def extractor() -> DocumentExtractor:
     return DocumentExtractor(project_root=Path("."))
 
 @pytest.fixture
-def pdf_source():
+def pdf_source() -> Source:
     return Source(
         source_id="test-pdf",
         bank="Test Bank",
@@ -32,7 +32,7 @@ def pdf_source():
     )
 
 @pytest.fixture
-def html_source():
+def html_source() -> Source:
     return Source(
         source_id="test-html",
         bank="Test Bank",
@@ -51,7 +51,7 @@ def html_source():
         stale_policy=StalePolicy.WARN_ONLY
     )
 
-def test_extract_pdf(extractor, pdf_source):
+def test_extract_pdf(extractor: DocumentExtractor, pdf_source: Source) -> None:
     extracted = extractor.extract(pdf_source)
     
     assert extracted.source_id == pdf_source.source_id
@@ -60,7 +60,7 @@ def test_extract_pdf(extractor, pdf_source):
     assert "Synthetic PDF Content" in extracted.pages[0].text
     assert "Synthetic PDF Content" in extracted.full_text
 
-def test_extract_html(extractor, html_source):
+def test_extract_html(extractor: DocumentExtractor, html_source: Source) -> None:
     extracted = extractor.extract(html_source)
     
     assert extracted.source_id == html_source.source_id
@@ -72,7 +72,7 @@ def test_extract_html(extractor, html_source):
     assert "noscript content" not in extracted.full_text
     assert len(extracted.pages) == 1
 
-def test_extract_missing_file(extractor, pdf_source):
+def test_extract_missing_file(extractor: DocumentExtractor, pdf_source: Source) -> None:
     pdf_source.local_path = "tests/fixtures/documents/non_existent.pdf"
     
     with pytest.raises(FileNotFoundError) as excinfo:
@@ -80,7 +80,7 @@ def test_extract_missing_file(extractor, pdf_source):
     
     assert "tests/fixtures/documents/non_existent.pdf" in str(excinfo.value)
 
-def test_extract_unsupported_type(extractor, pdf_source):
+def test_extract_unsupported_type(extractor: DocumentExtractor, pdf_source: Source) -> None:
     # This shouldn't normally happen if enums are strictly used, but good to check
     pdf_source.source_type = "unsupported" # type: ignore
     

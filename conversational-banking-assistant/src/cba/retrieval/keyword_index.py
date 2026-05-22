@@ -1,7 +1,7 @@
 import re
 from typing import Protocol, runtime_checkable
 
-from rank_bm25 import BM25Okapi
+from rank_bm25 import BM25Okapi  # type: ignore[import-untyped]
 
 from cba.domain.models import Chunk, SearchResult
 from cba.retrieval.metadata_filter import FilterCriteria, MetadataFilter
