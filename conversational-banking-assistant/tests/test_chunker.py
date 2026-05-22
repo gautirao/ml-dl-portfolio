@@ -1,7 +1,9 @@
+
 import pytest
-from pathlib import Path
-from cba.domain.models import ExtractedDocument, ExtractedPage, DocumentType, ProductArea, Chunk
-from cba.ingestion.chunker import TextCleaner, SectionDetector, SectionAwareChunker
+
+from cba.domain.models import DocumentType, ExtractedDocument, ExtractedPage, ProductArea
+from cba.ingestion.chunker import SectionAwareChunker, SectionDetector, TextCleaner
+
 
 @pytest.fixture
 def mock_extracted_doc():

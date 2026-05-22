@@ -1,19 +1,13 @@
-from pathlib import Path
-from typing import Optional, List
-from datetime import date, datetime
-from pydantic import BaseModel, Field, model_validator, field_validator
 import re
+from datetime import date, datetime
+from pathlib import Path
+
+from pydantic import BaseModel, field_validator, model_validator
 
 from cba.common.paths import is_safe_relative_path, validate_path_prefix
 
-from .enums import (
-    SourceType, 
-    ProductArea, 
-    DocumentType, 
-    RiskLevel, 
-    StalePolicy, 
-    ExtractionMethod
-)
+from .enums import DocumentType, ExtractionMethod, ProductArea, RiskLevel, SourceType, StalePolicy
+
 
 class Source(BaseModel):
     source_id: str
@@ -31,10 +25,10 @@ class Source(BaseModel):
     freshness_threshold_days: int
     allowed_for_demo: bool
     risk_level: RiskLevel
-    financial_advice_boundary: Optional[str] = None
+    financial_advice_boundary: str | None = None
     stale_policy: StalePolicy
-    licence_notes: Optional[str] = None
-    extraction_method: Optional[ExtractionMethod] = None
+    licence_notes: str | None = None
+    extraction_method: ExtractionMethod | None = None
 
     @field_validator("source_id")
     @classmethod
@@ -72,8 +66,14 @@ class Source(BaseModel):
             DocumentType.OVERDRAFT_GUIDANCE,
             DocumentType.COMPLAINTS_PROCESS
         ]
-        if (self.document_type in high_risk_types or self.product_area == ProductArea.CREDIT_CARDS) and self.risk_level == RiskLevel.LOW:
-            raise ValueError(f"risk_level cannot be low for {self.document_type} or {self.product_area}")
+        is_high_risk_area = (
+            self.document_type in high_risk_types or 
+            self.product_area == ProductArea.CREDIT_CARDS
+        )
+        if is_high_risk_area and self.risk_level == RiskLevel.LOW:
+            raise ValueError(
+                f"risk_level cannot be low for {self.document_type} or {self.product_area}"
+            )
             
         return self
 
@@ -94,13 +94,13 @@ class ExtractedPage(BaseModel):
 
 class ExtractedDocument(BaseModel):
     source_id: str
-    citation_label: Optional[str] = None
+    citation_label: str | None = None
     title: str
     document_type: DocumentType
     product_area: ProductArea
     local_path: str
     extracted_at: datetime
-    pages: List[ExtractedPage]
+    pages: list[ExtractedPage]
     
     @property
     def full_text(self) -> str:
@@ -113,13 +113,13 @@ class Chunk(BaseModel):
     title: str
     document_type: DocumentType
     product_area: ProductArea
-    section_heading: Optional[str] = None
+    section_heading: str | None = None
     chunk_index: int
     text: str
     character_start: int
     character_end: int
-    page_number_start: Optional[int] = None
-    page_number_end: Optional[int] = None
+    page_number_start: int | None = None
+    page_number_end: int | None = None
     chunk_hash: str
 
 class SearchResult(BaseModel):

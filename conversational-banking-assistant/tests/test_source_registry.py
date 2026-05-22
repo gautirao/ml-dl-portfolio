@@ -1,9 +1,11 @@
-import pytest
-from pathlib import Path
 from datetime import date, timedelta
-from cba.sources.registry import SourceRegistry
-from cba.domain.enums import IntegrityStatus
+from pathlib import Path
+
+import pytest
 from pydantic import ValidationError
+
+from cba.domain.enums import IntegrityStatus
+from cba.sources.registry import SourceRegistry
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
 REGISTRY_FIXTURES = FIXTURES_DIR / "source_registry"

@@ -1,16 +1,17 @@
-from enum import Enum
+from enum import StrEnum
 
-class SourceType(str, Enum):
+
+class SourceType(StrEnum):
     PUBLIC_WEB = "public_web"
     PUBLIC_PDF = "public_pdf"
 
-class ProductArea(str, Enum):
+class ProductArea(StrEnum):
     CURRENT_ACCOUNTS = "current_accounts"
     OVERDRAFTS = "overdrafts"
     SAVINGS = "savings"
     CREDIT_CARDS = "credit_cards"
 
-class DocumentType(str, Enum):
+class DocumentType(StrEnum):
     TERMS_CONDITIONS = "terms_conditions"
     FEE_INFORMATION = "fee_information"
     OVERDRAFT_GUIDANCE = "overdraft_guidance"
@@ -18,22 +19,22 @@ class DocumentType(str, Enum):
     DEPOSIT_PROTECTION = "deposit_protection"
     PRIVACY_POLICY = "privacy_policy"
 
-class RiskLevel(str, Enum):
+class RiskLevel(StrEnum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
 
-class StalePolicy(str, Enum):
+class StalePolicy(StrEnum):
     WARN_ONLY = "warn_only"
     BLOCK_ANSWER = "block_answer"
     REQUIRE_REFRESH = "require_refresh"
 
-class ExtractionMethod(str, Enum):
+class ExtractionMethod(StrEnum):
     PYPDF = "pypdf"
     BEAUTIFULSOUP = "beautifulsoup"
     MANUAL_MARKDOWN = "manual_markdown"
 
-class IntegrityStatus(str, Enum):
+class IntegrityStatus(StrEnum):
     OK = "OK"
     MISSING_FILE = "MISSING_FILE"
     HASH_MISMATCH = "HASH_MISMATCH"

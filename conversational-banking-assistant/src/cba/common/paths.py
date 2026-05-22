@@ -1,5 +1,6 @@
 from pathlib import Path
 
+
 def is_safe_relative_path(path_str: str) -> bool:
     """
     Check if a path string is relative and doesn't contain traversal (..).

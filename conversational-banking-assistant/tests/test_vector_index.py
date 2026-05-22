@@ -1,8 +1,10 @@
+
 import pytest
-from pathlib import Path
+
+from cba.domain.models import Chunk, DocumentType, ProductArea
 from cba.retrieval.embeddings import FakeEmbeddingModel
 from cba.retrieval.vector_index import QdrantVectorIndex
-from cba.domain.models import Chunk, DocumentType, ProductArea
+
 
 @pytest.fixture
 def fake_embedding_model():
@@ -28,7 +30,8 @@ def sample_chunk():
 
 def test_vector_store_path_safety(fake_embedding_model):
     # Should fail if path is not under data/vector_store/
-    with pytest.raises(ValueError, match="Persistent vector store must be under data/vector_store/"):
+    msg = "Persistent vector store must be under data/vector_store/"
+    with pytest.raises(ValueError, match=msg):
         QdrantVectorIndex(embedding_model=fake_embedding_model, path="/tmp/unsafe_qdrant")
 
 def test_add_and_search_chunks(fake_embedding_model, sample_chunk):

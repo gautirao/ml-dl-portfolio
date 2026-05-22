@@ -1,17 +1,17 @@
-import yaml
-from pathlib import Path
-from typing import List, Optional
 from datetime import date
+from pathlib import Path
 
-from cba.domain.models import Source
-from cba.domain.enums import IntegrityStatus
+import yaml
 
 from cba.common.hashing import calculate_file_sha256
+from cba.domain.enums import IntegrityStatus
+from cba.domain.models import Source
+
 
 class SourceRegistry:
     @staticmethod
-    def load_from_yaml(file_path: Path) -> List[Source]:
-        with open(file_path, "r") as f:
+    def load_from_yaml(file_path: Path) -> list[Source]:
+        with open(file_path) as f:
             data = yaml.safe_load(f)
         
         if not data:

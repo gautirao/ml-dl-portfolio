@@ -1,8 +1,11 @@
-import pytest
-from pathlib import Path
 from datetime import date
-from cba.domain.models import Source, SourceType, ProductArea, DocumentType, RiskLevel, StalePolicy
+from pathlib import Path
+
+import pytest
+
+from cba.domain.models import DocumentType, ProductArea, RiskLevel, Source, SourceType, StalePolicy
 from cba.ingestion.extractor import DocumentExtractor
+
 
 @pytest.fixture
 def extractor():

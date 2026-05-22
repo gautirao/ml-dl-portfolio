@@ -1,10 +1,17 @@
 import re
-from typing import List, Optional
-from cba.domain.models import ExtractedDocument, Chunk
+from typing import TypedDict
+
 from cba.common.hashing import calculate_text_sha256
+from cba.domain.models import Chunk, ExtractedDocument
+
+
+class SectionData(TypedDict):
+    heading: str | None
+    text: str
+    start_offset: int
 
 class TextCleaner:
-    def __init__(self):
+    def __init__(self) -> None:
         # Heuristics for boilerplate removal
         self.boilerplate_patterns = [
             r"^Skip to main content$",
@@ -22,7 +29,10 @@ class TextCleaner:
         for line in lines:
             stripped = line.strip()
             # Check against boilerplate patterns
-            if any(re.match(pattern, stripped, re.IGNORECASE) for pattern in self.boilerplate_patterns):
+            is_boilerplate = any(
+                re.match(pattern, stripped, re.IGNORECASE) for pattern in self.boilerplate_patterns
+            )
+            if is_boilerplate:
                 continue
             cleaned_lines.append(line) # Keep original line to preserve structure initially
 
@@ -35,7 +45,7 @@ class TextCleaner:
         return cleaned_text.strip()
 
 class SectionDetector:
-    def __init__(self):
+    def __init__(self) -> None:
         # Positive signals
         self.numbered_heading_pattern = r"^\d+(\.\d+)*\.?\s+[A-Z]"
         self.uppercase_heading_pattern = r"^[A-Z\s]{5,}$"
@@ -67,13 +77,13 @@ class SectionDetector:
         return False
 
 class SectionAwareChunker:
-    def __init__(self, max_chars: int = 1000, overlap_chars: int = 200):
+    def __init__(self, max_chars: int = 1000, overlap_chars: int = 200) -> None:
         self.max_chars = max_chars
         self.overlap_chars = overlap_chars
         self.cleaner = TextCleaner()
         self.detector = SectionDetector()
 
-    def chunk(self, doc: ExtractedDocument, citation_label: Optional[str] = None) -> List[Chunk]:
+    def chunk(self, doc: ExtractedDocument, citation_label: str | None = None) -> list[Chunk]:
         citation_label = citation_label or doc.citation_label or "Unknown Source"
         
         # 1. Clean the full text
@@ -101,16 +111,14 @@ class SectionAwareChunker:
                 page_offsets.append((page.page_number, -1, -1))
 
         # 3. Detect sections and chunk
-        chunks: List[Chunk] = []
+        chunks: list[Chunk] = []
         lines = cleaned_text.split("\n")
         
-        current_section_heading = None
-        section_text = ""
-        section_start_offset = 0
+        current_section_heading: str | None = None
         
         # To simplify, we'll group lines into sections first
-        sections = []
-        current_section_content = []
+        sections: list[SectionData] = []
+        current_section_content: list[str] = []
         current_section_start = 0
         
         pos = 0
@@ -203,7 +211,11 @@ class SectionAwareChunker:
                     chunk_index += 1
                 
                 # Move position, accounting for overlap
-                sect_pos = chunk_end - self.overlap_chars if chunk_end < len(sect_text) else len(sect_text)
+                if chunk_end < len(sect_text):
+                    sect_pos = chunk_end - self.overlap_chars
+                else:
+                    sect_pos = len(sect_text)
+
                 if sect_pos <= 0 and self.overlap_chars > 0: # Safety
                     sect_pos = chunk_end
 

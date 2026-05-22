@@ -1,13 +1,12 @@
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import List
 
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
-from cba.domain.models import Source, ExtractedDocument, ExtractedPage
 from cba.domain.enums import SourceType
+from cba.domain.models import ExtractedDocument, ExtractedPage, Source
+
 
 class DocumentExtractor:
     def __init__(self, project_root: Path = Path(".")):
@@ -19,7 +18,8 @@ class DocumentExtractor:
         """
         full_path = self.project_root / source.local_path
         if not full_path.exists():
-            raise FileNotFoundError(f"Source file not found at: {source.local_path} (full path: {full_path})")
+            msg = f"Source file not found at: {source.local_path} (full path: {full_path})"
+            raise FileNotFoundError(msg)
 
         if source.source_type == SourceType.PUBLIC_PDF:
             return self._extract_pdf(source, full_path)
@@ -29,7 +29,7 @@ class DocumentExtractor:
             raise ValueError(f"Unsupported source type for extraction: {source.source_type}")
 
     def _extract_pdf(self, source: Source, full_path: Path) -> ExtractedDocument:
-        pages: List[ExtractedPage] = []
+        pages: list[ExtractedPage] = []
         reader = PdfReader(full_path)
         
         for i, page in enumerate(reader.pages):
@@ -47,7 +47,7 @@ class DocumentExtractor:
         )
 
     def _extract_html(self, source: Source, full_path: Path) -> ExtractedDocument:
-        with open(full_path, "r", encoding="utf-8") as f:
+        with open(full_path, encoding="utf-8") as f:
             content = f.read()
             
         soup = BeautifulSoup(content, "html.parser")
