@@ -173,3 +173,33 @@ async def test_ollama_connection_error_mapping() -> None:
 
     with pytest.raises(LlmProviderError, match="Failed to connect to Ollama"):
         await client.generate(request)
+
+
+@pytest.mark.anyio
+@respx.mock
+async def test_ollama_injected_client_reuse() -> None:
+    # Verify that an injected client is used and not closed
+    import httpx
+    async with httpx.AsyncClient() as shared_client:
+        client = OllamaLlmClient(client=shared_client)
+        
+        mock_response = {
+            "model": "qwen2.5:3b",
+            "message": {"role": "assistant", "content": "Reuse test"},
+            "done": True,
+        }
+        respx.post("http://localhost:11434/api/chat").mock(
+            return_value=Response(200, json=mock_response)
+        )
+
+        request = LlmRequest(
+            messages=[LlmMessage(role=LlmRole.USER, content="Hi")],
+            model="qwen2.5:3b",
+            provider=LlmProvider.OLLAMA,
+        )
+
+        resp = await client.generate(request)
+        assert resp.text == "Reuse test"
+        
+        # Injected client should still be open
+        assert not shared_client.is_closed

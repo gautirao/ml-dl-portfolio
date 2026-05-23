@@ -24,6 +24,7 @@ class OllamaLlmClient(LlmClient):
         base_url: str | None = None,
         model: str | None = None,
         timeout_seconds: float | None = None,
+        client: httpx.AsyncClient | None = None,
     ) -> None:
         """
         Initialize the Ollama client.
@@ -37,13 +38,14 @@ class OllamaLlmClient(LlmClient):
             timeout_seconds
             or float(os.getenv("CBA_OLLAMA_TIMEOUT_SECONDS") or "60.0")
         )
+        self._client = client
 
     async def generate(self, request: LlmRequest) -> LlmResponse:
         """
         Generate a response using Ollama's /api/chat endpoint.
         """
         url = f"{self.base_url}/api/chat"
-        
+
         # Mapping LlmRequest to Ollama chat payload
         payload = {
             "model": request.model or self.default_model,
@@ -54,16 +56,21 @@ class OllamaLlmClient(LlmClient):
                 "num_predict": request.max_tokens,
             },
         }
-        
+
         # If a schema name is provided, hint at JSON format
         if request.response_schema_name:
             payload["format"] = "json"
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                response = await client.post(url, json=payload)
+            if self._client:
+                response = await self._client.post(url, json=payload, timeout=self.timeout)
                 response.raise_for_status()
                 data = response.json()
+            else:
+                async with httpx.AsyncClient(timeout=self.timeout) as client:
+                    response = await client.post(url, json=payload)
+                    response.raise_for_status()
+                    data = response.json()
         except httpx.HTTPStatusError as e:
             msg = f"Ollama API returned error: {e.response.status_code} - {e.response.text}"
             raise LlmProviderError(msg) from e
