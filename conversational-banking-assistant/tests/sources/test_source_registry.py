@@ -14,7 +14,7 @@ from cba.domain.enums import (
 )
 from cba.sources.registry import SourceRegistry
 
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
+FIXTURES_DIR = Path(__file__).parent.parent / "fixtures"
 REGISTRY_FIXTURES = FIXTURES_DIR / "source_registry"
 DOC_FIXTURES = FIXTURES_DIR / "documents"
 

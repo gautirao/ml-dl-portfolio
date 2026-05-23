@@ -1,32 +1,10 @@
 
 import pytest
 
-from cba.domain.models import Chunk, DocumentType, ProductArea
-from cba.retrieval.embeddings import EmbeddingModel, FakeEmbeddingModel
+from cba.domain.models import Chunk
+from cba.retrieval.embeddings import EmbeddingModel
 from cba.retrieval.vector_index import QdrantVectorIndex
 
-
-@pytest.fixture
-def fake_embedding_model() -> EmbeddingModel:
-    return FakeEmbeddingModel(dimension=384)
-
-@pytest.fixture
-def sample_chunk() -> Chunk:
-    return Chunk(
-        chunk_id="test-source::chunk::0001",
-        source_id="test-source",
-        citation_label="Test Label",
-        title="Test Title",
-        document_type=DocumentType.TERMS_CONDITIONS,
-        product_area=ProductArea.CURRENT_ACCOUNTS,
-        section_heading="Test Section",
-        chunk_index=1,
-        text="This is a test chunk of text about banking policies.",
-        character_start=0,
-        character_end=52,
-        page_number_start=1,
-        chunk_hash="fakehash123"
-    )
 
 def test_vector_store_path_safety(fake_embedding_model: EmbeddingModel) -> None:
     # Should fail if path is not under data/vector_store/
