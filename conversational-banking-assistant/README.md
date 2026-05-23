@@ -4,7 +4,7 @@
 **Architecture Theme:** Safety-First Local RAG for Regulated Domains
 
 ## 📖 Summary
-The **Conversational Banking Assistant** is a planned prototype local AI chatbot designed to answer questions from publicly available banking policy, fee, and overdraft documents. It demonstrates how conversational AI can be made safer and more reliable in a regulated domain by using document retrieval, citations, deterministic tools, confidence checks, refusal rules, and comprehensive audit logging.
+The **Conversational Banking Assistant** is a planned prototype local AI chatbot designed to answer questions from publicly available banking policy, fee, and overdraft documents. It demonstrates how conversational AI can be made safer and more reliable in a regulated domain by using document retrieval, citations, deterministic tools, confidence checks, refusal rules, and comprehensive audit logging. The project adheres to **production-grade engineering standards**, featuring a provider-swappable architecture, observability tracing, and a robust evaluation framework.
 
 ## 🎯 Problem Statement
 Generic LLMs often hallucinate financial details or provide unsupported advice when queried about specific banking policies. In a regulated environment, "creative" answers are a liability. This project addresses these risks by grounding every response in verified documents and enforcing strict guardrails.
