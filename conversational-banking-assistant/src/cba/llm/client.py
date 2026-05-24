@@ -49,7 +49,18 @@ class LlmError(Exception):
 
 class LlmInvalidResponseError(LlmError):
     """Raised when the model fails to return a valid format or JSON."""
-    pass
+
+    def __init__(
+        self,
+        message: str,
+        schema_name: str | None = None,
+        raw_text: str | None = None,
+        errors: list[str] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.schema_name = schema_name
+        self.raw_text = raw_text
+        self.errors = errors
 
 
 class LlmProviderError(LlmError):
