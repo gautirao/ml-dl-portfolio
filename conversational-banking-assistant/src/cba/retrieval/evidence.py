@@ -94,50 +94,33 @@ class EvidencePacket(BaseModel):
         filters_applied: FilterCriteria | None = None,
     ) -> Self:
         """
-        Factory method to create a packet from raw search results, 
+        Factory method to create a packet from raw search results,
         performing deduplication and deterministic sorting.
         """
         evidence_map: dict[str, EvidenceItem] = {}
-        
+
         # Process Vector Results
         if vector_results:
             for i, res in enumerate(vector_results):
-                cls._add_to_map(
-                    evidence_map, 
-                    res, 
-                    RetrievalMethod.VECTOR, 
-                    rank=i + 1
-                )
-                
+                cls._add_to_map(evidence_map, res, RetrievalMethod.VECTOR, rank=i + 1)
+
         # Process Keyword Results
         if keyword_results:
             for i, res in enumerate(keyword_results):
-                cls._add_to_map(
-                    evidence_map, 
-                    res, 
-                    RetrievalMethod.KEYWORD, 
-                    rank=i + 1
-                )
-        
-        # Sort items: 
+                cls._add_to_map(evidence_map, res, RetrievalMethod.KEYWORD, rank=i + 1)
+
+        # Sort items:
         # 1. best rank across methods
         # 2. original insertion (implicit in dict order in Python 3.7+, but let's be safe)
         # 3. chunk_id
         items = list(evidence_map.values())
         items.sort(key=lambda x: (x.get_best_rank(), x.chunk_id))
-        
-        return cls(
-            question=question,
-            items=items,
-            filters_applied=filters_applied
-        )
+
+        return cls(question=question, items=items, filters_applied=filters_applied)
 
     @staticmethod
     def _add_to_map(
-        evidence_map: dict[str, EvidenceItem], 
-        res: SearchResult, 
-        method: RetrievalMethod,
-        rank: int
+        evidence_map: dict[str, EvidenceItem], res: SearchResult, method: RetrievalMethod, rank: int
     ) -> None:
         chunk_id = res.chunk.chunk_id
         if chunk_id in evidence_map:
@@ -151,7 +134,7 @@ class EvidencePacket(BaseModel):
                 chunk=res.chunk,
                 retrieval_methods=[method],
                 scores_by_method={method: res.score},
-                ranks_by_method={method: rank}
+                ranks_by_method={method: rank},
             )
 
     def to_context_blocks(self) -> str:
@@ -165,7 +148,7 @@ class EvidencePacket(BaseModel):
         for item in self.items:
             citation = f"[{item.citation_label}]"
             section = f" Section: {item.section_heading}" if item.section_heading else ""
-            
+
             page_info = ""
             if item.page_number_start:
                 if item.page_number_end and item.page_number_end != item.page_number_start:
@@ -175,7 +158,7 @@ class EvidencePacket(BaseModel):
 
             header = f"{citation}{section}{page_info}"
             separator = "-" * len(header)
-            
+
             block = (
                 f"{header}\n"
                 f"{separator}\n"

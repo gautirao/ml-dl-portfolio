@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 
+from cba.answering.evidence_support import EvidenceSupportConfig, EvidenceSupportError
 from cba.answering.grounded_answer import CitationValidationError, GroundedAnswerDecision
 from cba.answering.service import GroundedAnswerService
 from cba.domain.enums import DocumentType, ProductArea
@@ -128,7 +129,40 @@ async def test_generate_answer_empty_packet(
     answer = await service.generate_answer("How do I pay?", empty_packet)
 
     assert answer.decision == GroundedAnswerDecision.INSUFFICIENT_EVIDENCE
+    assert "Insufficient evidence" in answer.answer
     assert len(fake_llm.received_requests) == 0
+
+
+@pytest.mark.anyio
+async def test_generate_answer_below_min_items(
+    fake_llm: FakeLlmClient, evidence_packet: EvidencePacket
+) -> None:
+    # Config requires 3 items, packet has 2
+    config = EvidenceSupportConfig(min_evidence_items=3)
+    service = GroundedAnswerService(fake_llm, support_config=config)
+
+    answer = await service.generate_answer("?", evidence_packet)
+
+    assert answer.decision == GroundedAnswerDecision.INSUFFICIENT_EVIDENCE
+    assert len(fake_llm.received_requests) == 0
+
+
+@pytest.mark.anyio
+async def test_generate_answer_protocol_violation_no_citations(
+    service: GroundedAnswerService, fake_llm: FakeLlmClient, evidence_packet: EvidencePacket
+) -> None:
+    # Decision is answer but citations are empty
+    response_data = {
+        "decision": "answer",
+        "answer": "Answer without citations",
+        "citations": [],
+    }
+    fake_llm.add_response(
+        LlmResponse(text=json.dumps(response_data), model="test-model", provider=LlmProvider.FAKE)
+    )
+
+    with pytest.raises(EvidenceSupportError, match="no citations provided"):
+        await service.generate_answer("?", evidence_packet)
 
 
 @pytest.mark.anyio

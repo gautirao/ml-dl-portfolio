@@ -11,6 +11,7 @@ from cba.ingestion.extractor import DocumentExtractor
 def extractor() -> DocumentExtractor:
     return DocumentExtractor(project_root=Path("."))
 
+
 @pytest.fixture
 def pdf_source() -> Source:
     return Source(
@@ -28,8 +29,9 @@ def pdf_source() -> Source:
         freshness_threshold_days=30,
         allowed_for_demo=False,
         risk_level=RiskLevel.MEDIUM,
-        stale_policy=StalePolicy.WARN_ONLY
+        stale_policy=StalePolicy.WARN_ONLY,
     )
+
 
 @pytest.fixture
 def html_source() -> Source:
@@ -48,21 +50,23 @@ def html_source() -> Source:
         freshness_threshold_days=30,
         allowed_for_demo=False,
         risk_level=RiskLevel.MEDIUM,
-        stale_policy=StalePolicy.WARN_ONLY
+        stale_policy=StalePolicy.WARN_ONLY,
     )
+
 
 def test_extract_pdf(extractor: DocumentExtractor, pdf_source: Source) -> None:
     extracted = extractor.extract(pdf_source)
-    
+
     assert extracted.source_id == pdf_source.source_id
     assert extracted.title == pdf_source.title
     assert len(extracted.pages) == 1
     assert "Synthetic PDF Content" in extracted.pages[0].text
     assert "Synthetic PDF Content" in extracted.full_text
 
+
 def test_extract_html(extractor: DocumentExtractor, html_source: Source) -> None:
     extracted = extractor.extract(html_source)
-    
+
     assert extracted.source_id == html_source.source_id
     assert "Current Account Terms" in extracted.full_text
     assert "Monthly fee: £0" in extracted.full_text
@@ -72,19 +76,21 @@ def test_extract_html(extractor: DocumentExtractor, html_source: Source) -> None
     assert "noscript content" not in extracted.full_text
     assert len(extracted.pages) == 1
 
+
 def test_extract_missing_file(extractor: DocumentExtractor, pdf_source: Source) -> None:
     pdf_source.local_path = "tests/fixtures/documents/non_existent.pdf"
-    
+
     with pytest.raises(FileNotFoundError) as excinfo:
         extractor.extract(pdf_source)
-    
+
     assert "tests/fixtures/documents/non_existent.pdf" in str(excinfo.value)
+
 
 def test_extract_unsupported_type(extractor: DocumentExtractor, pdf_source: Source) -> None:
     # This shouldn't normally happen if enums are strictly used, but good to check
-    pdf_source.source_type = "unsupported" # type: ignore
-    
+    pdf_source.source_type = "unsupported"  # type: ignore
+
     with pytest.raises(ValueError) as excinfo:
         extractor.extract(pdf_source)
-    
+
     assert "Unsupported source type" in str(excinfo.value)

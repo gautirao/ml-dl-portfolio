@@ -31,11 +31,11 @@ class DocumentExtractor:
     def _extract_pdf(self, source: Source, full_path: Path) -> ExtractedDocument:
         pages: list[ExtractedPage] = []
         reader = PdfReader(full_path)
-        
+
         for i, page in enumerate(reader.pages):
             text = page.extract_text() or ""
             pages.append(ExtractedPage(page_number=i + 1, text=text.strip()))
-            
+
         return ExtractedDocument(
             source_id=source.source_id,
             title=source.title,
@@ -43,25 +43,25 @@ class DocumentExtractor:
             product_area=source.product_area,
             local_path=source.local_path,
             extracted_at=datetime.now(),
-            pages=pages
+            pages=pages,
         )
 
     def _extract_html(self, source: Source, full_path: Path) -> ExtractedDocument:
         with open(full_path, encoding="utf-8") as f:
             content = f.read()
-            
+
         soup = BeautifulSoup(content, "html.parser")
-        
+
         # Remove script, style, and noscript elements
         for element in soup(["script", "style", "noscript"]):
             element.decompose()
-            
+
         # Extract visible text
         text = soup.get_text(separator="\n", strip=True)
-        
+
         # HTML is treated as a single page (page 1)
         pages = [ExtractedPage(page_number=1, text=text)]
-        
+
         return ExtractedDocument(
             source_id=source.source_id,
             title=source.title,
@@ -69,5 +69,5 @@ class DocumentExtractor:
             product_area=source.product_area,
             local_path=source.local_path,
             extracted_at=datetime.now(),
-            pages=pages
+            pages=pages,
         )

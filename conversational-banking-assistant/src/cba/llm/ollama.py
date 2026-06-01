@@ -34,10 +34,7 @@ class OllamaLlmClient(LlmClient):
             base_url or os.getenv("CBA_OLLAMA_BASE_URL") or "http://localhost:11434"
         ).rstrip("/")
         self.default_model = model or os.getenv("CBA_OLLAMA_MODEL") or "qwen2.5:3b"
-        self.timeout = (
-            timeout_seconds
-            or float(os.getenv("CBA_OLLAMA_TIMEOUT_SECONDS") or "60.0")
-        )
+        self.timeout = timeout_seconds or float(os.getenv("CBA_OLLAMA_TIMEOUT_SECONDS") or "60.0")
         self._client = client
 
     async def generate(self, request: LlmRequest) -> LlmResponse:

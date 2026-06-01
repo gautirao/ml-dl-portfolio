@@ -13,10 +13,10 @@ class SourceRegistry:
     def load_from_yaml(file_path: Path) -> list[Source]:
         with open(file_path) as f:
             data = yaml.safe_load(f)
-        
+
         if not data:
             return []
-            
+
         return [Source(**item) for item in data]
 
     @staticmethod
@@ -24,14 +24,14 @@ class SourceRegistry:
         # local_path is relative to project root (or data/raw/ as per design)
         # However, for tests, we allow it to be relative to the provided project_root
         full_path = project_root / source.local_path
-        
+
         if not full_path.exists():
             return IntegrityStatus.MISSING_FILE
-        
+
         actual_hash = calculate_file_sha256(full_path)
         if actual_hash != source.content_hash:
             return IntegrityStatus.HASH_MISMATCH
-            
+
         return IntegrityStatus.OK
 
     @staticmethod

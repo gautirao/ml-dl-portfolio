@@ -7,12 +7,15 @@ from cba.llm.client import LlmProvider
 
 class GroundedAnswerDecision(StrEnum):
     """Enumeration of possible decisions for grounded answer generation."""
+
     ANSWER = "answer"
     INSUFFICIENT_EVIDENCE = "insufficient_evidence"
     REFUSAL = "refusal"
 
+
 class GroundedCitation(BaseModel):
     """Represents a specific citation to a chunk of evidence."""
+
     chunk_id: str = Field(..., description="The unique identifier of the source chunk.")
     citation_label: str = Field(
         ..., description="The human-readable label for the source (e.g., 'NatWest T&Cs, p. 5')."
@@ -46,6 +49,7 @@ class GroundedAnswer(BaseModel):
 
 class CitationValidationError(Exception):
     """Raised when the LLM cites a chunk_id not present in the EvidencePacket."""
+
     def __init__(self, chunk_id: str):
         super().__init__(f"LLM cited unknown chunk_id: {chunk_id}")
         self.chunk_id = chunk_id

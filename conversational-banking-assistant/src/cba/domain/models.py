@@ -42,14 +42,14 @@ class Source(BaseModel):
     def validate_local_path_safety(cls, v: str) -> str:
         if not is_safe_relative_path(v):
             if Path(v).is_absolute():
-                 raise ValueError("absolute paths are not permitted in local_path")
+                raise ValueError("absolute paths are not permitted in local_path")
             raise ValueError("Path traversal (..) is not permitted in local_path")
 
         # In a real scenario, we'd enforce data/raw/ prefix here.
         # However, to support tests using fixtures, we allow 'tests/fixtures/' as well.
         if not validate_path_prefix(v, ["data/raw/", "tests/fixtures/"]):
             raise ValueError("local_path must be under data/raw/ (or tests/fixtures/ for testing)")
-            
+
         return v
 
     @model_validator(mode="after")
@@ -57,24 +57,23 @@ class Source(BaseModel):
         # Risk/Boundary: If risk_level == "high", financial_advice_boundary must be non-empty.
         if self.risk_level == RiskLevel.HIGH and not self.financial_advice_boundary:
             raise ValueError("financial_advice_boundary is mandatory if risk_level is high")
-        
+
         # Risk/Type: document_type in [fee_information, overdraft_guidance, complaints_process]
         # OR product_area == credit_cards
         # These must not allow risk_level = low.
         high_risk_types = [
             DocumentType.FEE_INFORMATION,
             DocumentType.OVERDRAFT_GUIDANCE,
-            DocumentType.COMPLAINTS_PROCESS
+            DocumentType.COMPLAINTS_PROCESS,
         ]
         is_high_risk_area = (
-            self.document_type in high_risk_types or 
-            self.product_area == ProductArea.CREDIT_CARDS
+            self.document_type in high_risk_types or self.product_area == ProductArea.CREDIT_CARDS
         )
         if is_high_risk_area and self.risk_level == RiskLevel.LOW:
             raise ValueError(
                 f"risk_level cannot be low for {self.document_type} or {self.product_area}"
             )
-            
+
         return self
 
     @model_validator(mode="after")
@@ -88,9 +87,11 @@ class Source(BaseModel):
                 raise ValueError("url cannot be PLACEHOLDER_URL if allowed_for_demo is True")
         return self
 
+
 class ExtractedPage(BaseModel):
     page_number: int
     text: str
+
 
 class ExtractedDocument(BaseModel):
     source_id: str
@@ -101,10 +102,11 @@ class ExtractedDocument(BaseModel):
     local_path: str
     extracted_at: datetime
     pages: list[ExtractedPage]
-    
+
     @property
     def full_text(self) -> str:
         return "\n\n".join([page.text for page in self.pages])
+
 
 class Chunk(BaseModel):
     chunk_id: str
@@ -122,6 +124,7 @@ class Chunk(BaseModel):
     page_number_end: int | None = None
     chunk_hash: str
 
+
 class SearchResult(BaseModel):
     chunk: Chunk
-    score: float # Cosine similarity, higher is better
+    score: float  # Cosine similarity, higher is better

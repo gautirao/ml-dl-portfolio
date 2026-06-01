@@ -16,10 +16,12 @@ class EmbeddingModel(Protocol):
         """
         ...
 
+
 class FakeEmbeddingModel:
     """
     Deterministic fake embeddings for testing.
     """
+
     def __init__(self, dimension: int = 384):
         self.dimension = dimension
 
@@ -34,7 +36,7 @@ class FakeEmbeddingModel:
             # Deterministic pseudo-randomness
             val = ((hash_val >> (i % 32)) & 0xFF) / 255.0
             vector.append(val)
-        
+
         # Normalize to unit length (Cosine similarity requires this for 1.0 match)
-        norm = sum(x*x for x in vector) ** 0.5
+        norm = sum(x * x for x in vector) ** 0.5
         return [x / norm for x in vector]

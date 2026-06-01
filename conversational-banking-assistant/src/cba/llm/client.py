@@ -44,6 +44,7 @@ class LlmResponse(BaseModel):
 
 class LlmError(Exception):
     """Base exception for LLM-related issues."""
+
     pass
 
 
@@ -65,6 +66,7 @@ class LlmInvalidResponseError(LlmError):
 
 class LlmProviderError(LlmError):
     """Raised for upstream API failures, timeouts, or connection issues."""
+
     pass
 
 

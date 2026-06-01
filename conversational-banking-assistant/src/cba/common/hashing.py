@@ -12,6 +12,7 @@ def calculate_file_sha256(file_path: Path) -> str:
             sha256_hash.update(byte_block)
     return sha256_hash.hexdigest()
 
+
 def calculate_text_sha256(text: str) -> str:
     """
     Calculate the SHA256 hash of a text string.

@@ -16,20 +16,19 @@ class KeywordIndex(Protocol):
         ...
 
     def search(
-        self, 
-        query: str, 
-        criteria: FilterCriteria | None = None, 
-        top_k: int = 5
+        self, query: str, criteria: FilterCriteria | None = None, top_k: int = 5
     ) -> list[SearchResult]:
         """
         Perform a keyword search using BM25.
         """
         ...
 
+
 class BM25KeywordIndex:
     """
     Keyword index implementation using BM25Okapi.
     """
+
     def __init__(self) -> None:
         self.chunks: list[Chunk] = []
         self.bm25: BM25Okapi | None = None
@@ -52,10 +51,7 @@ class BM25KeywordIndex:
         self.bm25 = BM25Okapi(tokenized_corpus)
 
     def search(
-        self, 
-        query: str, 
-        criteria: FilterCriteria | None = None, 
-        top_k: int = 5
+        self, query: str, criteria: FilterCriteria | None = None, top_k: int = 5
     ) -> list[SearchResult]:
         if not self.bm25 or not self.chunks:
             return []
@@ -65,17 +61,17 @@ class BM25KeywordIndex:
             filtered_chunks = MetadataFilter.filter_chunks(self.chunks, criteria)
             if not filtered_chunks:
                 return []
-            
+
             # If we filtered, we need to calculate scores only for filtered chunks.
-            # BM25Okapi doesn't support easy sub-sampling, so we calculate for all 
+            # BM25Okapi doesn't support easy sub-sampling, so we calculate for all
             # and then filter the results, OR rebuild a temporary index.
             # Rebuilding a temporary index for each filtered search is safer for score consistency.
             tokenized_corpus = [self._tokenize(chunk.text) for chunk in filtered_chunks]
             temp_bm25 = BM25Okapi(tokenized_corpus)
-            
+
             tokenized_query = self._tokenize(query)
             scores = temp_bm25.get_scores(tokenized_query)
-            
+
             results = []
             for chunk, score in zip(filtered_chunks, scores, strict=True):
                 # In very small corpora, BM25 scores can be negative for matches.
@@ -84,22 +80,22 @@ class BM25KeywordIndex:
                 chunk_set = set(self._tokenize(chunk.text))
                 if query_set.intersection(chunk_set):
                     results.append(SearchResult(chunk=chunk, score=float(score)))
-            
+
             # Sort by score descending
             results.sort(key=lambda x: x.score, reverse=True)
             return results[:top_k]
-        
+
         # 2. No Filtering
         tokenized_query = self._tokenize(query)
         scores = self.bm25.get_scores(tokenized_query)
-        
+
         results = []
         for chunk, score in zip(self.chunks, scores, strict=True):
             query_set = set(tokenized_query)
             chunk_set = set(self._tokenize(chunk.text))
             if query_set.intersection(chunk_set):
                 results.append(SearchResult(chunk=chunk, score=float(score)))
-                
+
         # Sort by score descending
         results.sort(key=lambda x: x.score, reverse=True)
         return results[:top_k]

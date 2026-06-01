@@ -9,6 +9,7 @@ from cba.retrieval.metadata_filter import FilterCriteria
 
 class FakeVectorIndex:
     """A fake vector index."""
+
     def __init__(self, results: list[SearchResult]):
         self.results = results
 
@@ -21,14 +22,12 @@ class FakeVectorIndex:
 
 class FakeKeywordIndex:
     """A fake keyword index."""
+
     def __init__(self, results: list[SearchResult]):
         self.results = results
 
     def search(
-        self,
-        query: str,
-        criteria: FilterCriteria | None = None,
-        top_k: int = 5
+        self, query: str, criteria: FilterCriteria | None = None, top_k: int = 5
     ) -> list[SearchResult]:
         return self.results[:top_k]
 
@@ -39,33 +38,51 @@ class FakeKeywordIndex:
 @pytest.fixture
 def chunk_v1() -> Chunk:
     return Chunk(
-        chunk_id="v1", source_id="s1", citation_label="C1", title="T1",
+        chunk_id="v1",
+        source_id="s1",
+        citation_label="C1",
+        title="T1",
         document_type=DocumentType.TERMS_CONDITIONS,
         product_area=ProductArea.CURRENT_ACCOUNTS,
-        chunk_index=1, text="Vector only chunk",
-        character_start=0, character_end=10, chunk_hash="h1"
+        chunk_index=1,
+        text="Vector only chunk",
+        character_start=0,
+        character_end=10,
+        chunk_hash="h1",
     )
 
 
 @pytest.fixture
 def chunk_k1() -> Chunk:
     return Chunk(
-        chunk_id="k1", source_id="s2", citation_label="C2", title="T2",
+        chunk_id="k1",
+        source_id="s2",
+        citation_label="C2",
+        title="T2",
         document_type=DocumentType.FEE_INFORMATION,
         product_area=ProductArea.SAVINGS,
-        chunk_index=1, text="Keyword only chunk",
-        character_start=0, character_end=10, chunk_hash="h2"
+        chunk_index=1,
+        text="Keyword only chunk",
+        character_start=0,
+        character_end=10,
+        chunk_hash="h2",
     )
 
 
 @pytest.fixture
 def chunk_both() -> Chunk:
     return Chunk(
-        chunk_id="both", source_id="s3", citation_label="C3", title="T3",
+        chunk_id="both",
+        source_id="s3",
+        citation_label="C3",
+        title="T3",
         document_type=DocumentType.OVERDRAFT_GUIDANCE,
         product_area=ProductArea.CURRENT_ACCOUNTS,
-        chunk_index=1, text="Common chunk",
-        character_start=0, character_end=10, chunk_hash="h3"
+        chunk_index=1,
+        text="Common chunk",
+        character_start=0,
+        character_end=10,
+        chunk_hash="h3",
     )
 
 
@@ -94,7 +111,7 @@ def test_hybrid_retriever_combines_results(
     assert packet.items[0].chunk_id == "both"
     assert RetrievalMethod.VECTOR in packet.items[0].retrieval_methods
     assert RetrievalMethod.KEYWORD in packet.items[0].retrieval_methods
-    
+
     # Check preserved scores and ranks
     assert packet.items[0].scores_by_method[RetrievalMethod.VECTOR] == 0.9
     assert packet.items[0].ranks_by_method[RetrievalMethod.VECTOR] == 1
@@ -105,9 +122,9 @@ def test_hybrid_retriever_combines_results(
 def test_hybrid_retriever_deterministic_rrf_sorting(chunk_v1: Chunk, chunk_k1: Chunk) -> None:
     # v1 is rank 1 in vector, rank 2 in keyword
     # k1 is rank 1 in keyword, rank 2 in vector
-    # They should have the SAME RRF score. 
+    # They should have the SAME RRF score.
     # Sorting should fall back to chunk_id (k1 < v1)
-    
+
     vector_results = [
         SearchResult(chunk=chunk_v1, score=0.9),
         SearchResult(chunk=chunk_k1, score=0.8),
