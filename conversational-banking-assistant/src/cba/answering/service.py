@@ -28,12 +28,19 @@ class _GroundedAnswerWire(BaseModel):
 class GroundedAnswerService:
     """Orchestrates grounded answer generation with citation validation."""
 
-    def __init__(self, llm_client: LlmClient, model: str = "qwen2.5:7b", provider: LlmProvider = LlmProvider.OLLAMA):
+    def __init__(
+        self,
+        llm_client: LlmClient,
+        model: str = "qwen2.5:7b",
+        provider: LlmProvider = LlmProvider.OLLAMA,
+    ):
         self.llm_client = llm_client
         self.model = model
         self.provider = provider
 
-    async def generate_answer(self, question: str, evidence_packet: EvidencePacket) -> GroundedAnswer:
+    async def generate_answer(
+        self, question: str, evidence_packet: EvidencePacket
+    ) -> GroundedAnswer:
         """
         Generates a grounded answer from an EvidencePacket.
         

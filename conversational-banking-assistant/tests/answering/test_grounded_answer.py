@@ -58,7 +58,10 @@ def evidence_packet() -> EvidencePacket:
     # Use SearchResult instances
     packet = EvidencePacket.from_results(
         question="What is the interest rate?",
-        vector_results=[SearchResult(chunk=chunk1, score=0.9), SearchResult(chunk=chunk2, score=0.8)],
+        vector_results=[
+            SearchResult(chunk=chunk1, score=0.9),
+            SearchResult(chunk=chunk2, score=0.8),
+        ],
     )
     return packet
 
@@ -116,7 +119,9 @@ async def test_generate_answer_insufficient_evidence(
 
 
 @pytest.mark.anyio
-async def test_generate_answer_empty_packet(service: GroundedAnswerService, fake_llm: FakeLlmClient) -> None:
+async def test_generate_answer_empty_packet(
+    service: GroundedAnswerService, fake_llm: FakeLlmClient
+) -> None:
     # Should not even call the LLM
     empty_packet = EvidencePacket(question="any")
 
